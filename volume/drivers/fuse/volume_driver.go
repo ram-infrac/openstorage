@@ -23,6 +23,7 @@ type volumeDriver struct {
 	volume.StoreEnumerator
 	volume.StatsDriver
 	volume.QuiesceDriver
+	volume.BackupDriver
 	name        string
 	baseDirPath string
 	provider    Provider
@@ -43,6 +44,7 @@ func newVolumeDriver(
 		),
 		volume.StatsNotSupported,
 		volume.QuiesceNotSupported,
+		volume.BackupNotSupported,
 		name,
 		baseDirPath,
 		provider,
