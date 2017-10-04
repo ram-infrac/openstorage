@@ -807,7 +807,7 @@ func (vd *volAPI) cloudsnapCreateSched(w http.ResponseWriter, r *http.Request) {
 		VolumeID:   vol,
 		Schedule:   sched,
 		CredID:     credID,
-		MaxBackups: maxBackups,
+		MaxBackups: maxBackups ,
 	}
 
 	uuid, err := d.CreateCloudBackupSchedule(newSched)
