@@ -31,6 +31,61 @@ func (c *clusterClient) Name() string {
 	return "ClusterManager"
 }
 
+// remote is ignored in this local implementation.
+func (c *clusterClient) Pair(
+	remote cluster.Cluster,
+	token cluster.ClusterToken,
+) (cluster.ClusterToken, error) {
+	resp := cluster.ClusterToken{}
+
+	path := clusterPath + "/pair/" + token.Ip + "/" +
+		strconv.FormatUint(token.Port, 10) + "/" + token.Token
+	if err := c.c.Put().Resource(path).Do().Unmarshal(&resp); err != nil {
+		return resp, err
+	}
+
+	return resp, nil
+}
+
+func (c *clusterClient) RemotePairRequest(
+	token cluster.ClusterToken,
+) (cluster.ClusterToken, error) {
+	resp := cluster.ClusterToken{}
+	resp.Opts = make(map[string]string)
+
+	path := clusterPath + "/remotepairrequest/"
+	request := c.c.Put().Resource(path)
+	request.Body(&token)
+
+	if err := request.Do().Unmarshal(&resp); err != nil {
+		return resp, err
+	}
+
+	return resp, nil
+}
+
+func (c *clusterClient) ResetPairToken() (cluster.ClusterToken, error) {
+	resp := cluster.ClusterToken{}
+
+	path := clusterPath + "/resetpairtoken/"
+	if err := c.c.Put().Resource(path).Do().Unmarshal(&resp); err != nil {
+		return resp, err
+	}
+
+	return resp, nil
+}
+
+func (c *clusterClient) GetPairToken() (cluster.ClusterToken, error) {
+	resp := cluster.ClusterToken{}
+
+	path := clusterPath + "/getpairtoken/"
+	if err := c.c.Get().Resource(path).Do().Unmarshal(&resp); err != nil {
+		return resp, err
+	}
+
+	return resp, nil
+}
+
 func (c *clusterClient) Enumerate() (api.Cluster, error) {
 	cluster := api.Cluster{}
 

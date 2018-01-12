@@ -49,14 +49,34 @@ type NodeEntry struct {
 
 // ClusterInfo is the basic info about the cluster and its nodes
 type ClusterInfo struct {
-	Size          int
-	Status        api.Status
-	Id            string
-	NodeEntries   map[string]NodeEntry
-	LoggingURL    string
-	ManagementURL string
-	FluentDConfig api.FluentDConfig
-	TunnelConfig  api.TunnelConfig
+	Size            int
+	Status          api.Status
+	Id              string
+	NodeEntries     map[string]NodeEntry
+	LocalPairToken  string
+	RemotePairIp    string
+	RemotePairId    string
+	RemotePairToken string
+	LoggingURL      string
+	ManagementURL   string
+	FluentDConfig   api.FluentDConfig
+	TunnelConfig    api.TunnelConfig
+}
+
+// ClusterToken is used to authenticate two clusters during pair operations.
+type ClusterToken struct {
+	// Id of the cluster being paired with.
+	Id string
+	// Ip of the cluster being paired with.
+	Ip string
+	// Port on which the API server is listening.
+	Port uint64
+	// Secure is on if the API server is listening on a secure port.
+	Secure bool
+	// Token used for authentication.
+	Token string
+	// Opts are opaque options.
+	Opts map[string]string
 }
 
 // ClusterInitState is the snapshot state which should be used to initialize
@@ -102,6 +122,12 @@ type ClusterListener interface {
 
 	// Halt is called when a node is gracefully shutting down.
 	Halt(self *api.Node, clusterInfo *ClusterInfo) error
+
+	// Pair is called when we are pairing with another cluster.
+	Pair(self *api.Node, token *ClusterToken) error
+
+	// RemotePairRequest is called when we get a pair request from another cluster
+	RemotePairRequest(self *api.Node, token *ClusterToken) error
 
 	ClusterListenerNodeOps
 	ClusterListenerStatusOps
@@ -248,6 +274,18 @@ type Cluster interface {
 
 	// Enumerate lists all the nodes in the cluster.
 	Enumerate() (api.Cluster, error)
+
+	// Pair with a remote cluster.
+	Pair(Cluster, ClusterToken) (ClusterToken, error)
+
+	// RemotePairRequest handles an incoming pair request from a remote cluster.
+	RemotePairRequest(ClusterToken) (ClusterToken, error)
+
+	// ResetPairToken resets the authentication token.
+	ResetPairToken() (ClusterToken, error)
+
+	// GetPairToken gets the authentication token for this cluster.
+	GetPairToken() (ClusterToken, error)
 
 	// SetSize sets the maximum number of nodes in a cluster.
 	SetSize(size int) error
@@ -409,6 +447,20 @@ func (nc *NullClusterListener) ClearAlert(
 func (nc *NullClusterListener) EraseAlert(
 	resource api.ResourceType,
 	alertID int64,
+) error {
+	return nil
+}
+
+func (nc *NullClusterListener) Pair(
+	self *api.Node,
+	token *ClusterToken,
+) error {
+	return nil
+}
+
+func (nc *NullClusterListener) RemotePairRequest(
+	self *api.Node,
+	token *ClusterToken,
 ) error {
 	return nil
 }

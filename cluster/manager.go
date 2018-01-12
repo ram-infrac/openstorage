@@ -5,6 +5,7 @@ package cluster
 
 import (
 	"container/list"
+	"crypto/rand"
 	"encoding/gob"
 	"errors"
 	"fmt"
@@ -1798,4 +1799,168 @@ func (c *ClusterManager) putNodeCacheEntry(nodeId string, node api.Node) {
 	c.nodeCacheLock.Lock()
 	defer c.nodeCacheLock.Unlock()
 	c.nodeCache[nodeId] = node
+}
+
+// Pair remote pairs this cluster with a remote cluster.
+func (c *ClusterManager) Pair(
+	remote Cluster,
+	t ClusterToken,
+) (ClusterToken, error) {
+	remoteIp := t.Ip
+
+	// Pair with remote server
+	dlog.Infof("Attempting to pair with cluster at IP %v", remoteIp)
+
+	t.Opts = make(map[string]string)
+
+	// Record our cluster ID in the request
+	t.Id = c.selfNode.Id
+
+	// Issue a remote pair request
+	resp, err := remote.RemotePairRequest(t)
+	if err != nil {
+		dlog.Warnf("Unable to pair with %v: %v", remoteIp, err)
+		return t, err
+	}
+
+	// Update our KVDB
+	kvdb := kvdb.Instance()
+	kvlock, err := kvdb.LockWithID(clusterLockKey, c.config.NodeId)
+	if err != nil {
+		dlog.Warnln("Unable to obtain cluster lock for updating logging url into cluster config", err)
+		return resp, err
+	}
+	defer kvdb.Unlock(kvlock)
+
+	db, _, err := readClusterInfo()
+	if err != nil {
+		return resp, err
+	}
+
+	db.RemotePairIp = resp.Ip
+	db.RemotePairId = resp.Id
+	db.RemotePairToken = resp.Token
+
+	_, err = writeClusterInfo(&db)
+
+	// Alert all listeners that we are pairing with a cluster.
+	for e := c.listeners.Front(); e != nil; e = e.Next() {
+		err = e.Value.(ClusterListener).Pair(
+			&c.selfNode,
+			&resp,
+		)
+		if err != nil {
+			dlog.Errorf("Unable to notify %v on a cluster pair event: %v",
+				e.Value.(ClusterListener).String(),
+				err,
+			)
+			return resp, err
+		}
+	}
+
+	dlog.Infof("Successfully paired with cluster ID %v", resp.Id)
+
+	return resp, nil
+}
+
+// RemotePairPair handles a remote cluster's pair request
+func (c *ClusterManager) RemotePairRequest(
+	t ClusterToken,
+) (ClusterToken, error) {
+	kvdb := kvdb.Instance()
+	kvlock, err := kvdb.LockWithID(clusterLockKey, c.config.NodeId)
+	if err != nil {
+		dlog.Warnln("Unable to obtain cluster lock for updating logging url into cluster config", err)
+		return t, err
+	}
+	defer kvdb.Unlock(kvlock)
+
+	remoteId := t.Id
+	dlog.Infof("Processing an remote pair request from cluster %v", remoteId)
+
+	db, _, err := readClusterInfo()
+	if err != nil {
+		return t, err
+	}
+
+	if db.LocalPairToken == "" {
+		return t, fmt.Errorf("This cluster has not yet created an authentication token")
+	}
+
+	if t.Token != db.LocalPairToken {
+		return t, fmt.Errorf("Pair request contains an invalid authentication token")
+	}
+
+	t.Id = db.Id
+
+	// Alert all listeners that we are pairing with a cluster.
+	for e := c.listeners.Front(); e != nil; e = e.Next() {
+		err = e.Value.(ClusterListener).RemotePairRequest(
+			&c.selfNode,
+			&t,
+		)
+		if err != nil {
+			dlog.Errorf("Unable to notify %v on a a cluster remote pair request: %v",
+				e.Value.(ClusterListener).String(),
+				err,
+			)
+
+			return t, err
+		}
+	}
+
+	dlog.Infof("Successfully paired with remote cluster %v", remoteId)
+
+	return t, nil
+}
+
+func (c *ClusterManager) GetPairToken() (ClusterToken, error) {
+	t := ClusterToken{}
+
+	kvdb := kvdb.Instance()
+	kvlock, err := kvdb.LockWithID(clusterLockKey, c.config.NodeId)
+	if err != nil {
+		dlog.Warnln("Unable to obtain cluster lock for updating logging url into cluster config", err)
+		return t, err
+	}
+	defer kvdb.Unlock(kvlock)
+
+	db, _, err := readClusterInfo()
+	if err != nil {
+		return t, err
+	}
+
+	t.Token = db.LocalPairToken
+	t.Id = db.RemotePairIp
+	t.Ip = db.RemotePairIp
+
+	return t, err
+}
+
+func (c *ClusterManager) ResetPairToken() (ClusterToken, error) {
+	t := ClusterToken{}
+
+	kvdb := kvdb.Instance()
+	kvlock, err := kvdb.LockWithID(clusterLockKey, c.config.NodeId)
+	if err != nil {
+		dlog.Warnln("Unable to obtain cluster lock for updating logging url into cluster config", err)
+		return t, err
+	}
+	defer kvdb.Unlock(kvlock)
+
+	db, _, err := readClusterInfo()
+	if err != nil {
+		return t, err
+	}
+
+	b := make([]byte, 64)
+	rand.Read(b)
+	db.LocalPairToken = fmt.Sprintf("%x", b)
+
+	_, err = writeClusterInfo(&db)
+
+	t.Token = db.LocalPairToken
+	t.Id = db.Id
+
+	return t, err
 }
