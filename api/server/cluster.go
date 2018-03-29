@@ -11,6 +11,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/libopenstorage/openstorage/api"
 	"github.com/libopenstorage/openstorage/cluster"
+	"github.com/libopenstorage/openstorage/secrets"
 )
 
 const (
@@ -710,4 +711,9 @@ func handleResourceType(resource string) (api.ResourceType, error) {
 		}
 		return api.ResourceType_RESOURCE_TYPE_NONE, fmt.Errorf("Invalid resource type")
 	}
+}
+
+func (c *clusterApi) RegisterSecretManager(sec secrets.SecretManager) *secrets.Manager {
+	sm := secrets.NewSecretManager(sec)
+	return sm
 }

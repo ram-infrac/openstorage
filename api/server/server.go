@@ -10,6 +10,8 @@ import (
 	"github.com/sirupsen/logrus"
 
 	"github.com/gorilla/mux"
+	"github.com/libopenstorage/openstorage/secrets"
+	"github.com/libopenstorage/openstorage/secrets/fake"
 )
 
 // Route is a specification and  handler for a REST endpoint.
@@ -137,6 +139,12 @@ func startServer(name string, sockBase string, port uint16, routes []*Route) err
 	for _, v := range routes {
 		router.Methods(v.verb).Path(v.path).HandlerFunc(v.fn)
 	}
+	//Add only to cluster routes
+	clusterApi := newClusterAPI()
+	sm := clusterApi.RegisterSecretManager(fake.New())
+	for _, v := range sm.Routes() {
+		router.Methods(v.Verb).Path(v.Path).HandlerFunc(v.Fn)
+	}
 	socket := path.Join(sockBase, name+".sock")
 	os.Remove(socket)
 	os.MkdirAll(path.Dir(socket), 0755)
@@ -157,6 +165,7 @@ func startServer(name string, sockBase string, port uint16, routes []*Route) err
 
 type restServer interface {
 	Routes() []*Route
+	RegisterSecretManager(secret secrets.SecretManager) *secrets.Manager
 	String() string
 	logRequest(request string, id string) *logrus.Entry
 	sendError(request string, id string, w http.ResponseWriter, msg string, code int)
