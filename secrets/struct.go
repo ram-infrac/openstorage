@@ -27,13 +27,13 @@ type Route struct {
 // ClusterSecretKeyRequest  specify request to set cluster secret key
 // swagger: parameters clusterKey
 type ClusterSecretKeyRequest struct {
-	Clustersecretkey string
+	ClusterSecretKey string
 	Override         bool
 }
 
 // SetsecretsLogin setsecrets
 // swagger: parameters secret
 type SetSecretsRequest struct {
-	Secretid    string
+	SecretID    string
 	SecretValue string
 }
