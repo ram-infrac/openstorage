@@ -26,6 +26,7 @@ func (c *clusterClient) clusterOptions(context *cli.Context) {
 		fmt.Printf("Failed to initialize client library: %v\n", err)
 		os.Exit(1)
 	}
+	fmt.Println("Initiated Cluster Client from cli")
 	c.manager = clusterclient.ClusterManager(clnt)
 }
 
@@ -95,6 +96,16 @@ func (c *clusterClient) remove(context *cli.Context) {
 }
 
 func (c *clusterClient) shutdown(context *cli.Context) {
+}
+
+func (c *clusterClient) setClusterkey(context *cli.Context) {
+	c.clusterOptions(context)
+	fn := "setClusterkey"
+	err := c.manager.SetClusterSecretKey(context.String("clustersecretkey"), false)
+	if err != nil {
+		cmdError(context, fn, err)
+		return
+	}
 }
 
 func (c *clusterClient) disableGossip(context *cli.Context) {
@@ -214,6 +225,17 @@ func ClusterCommands() []cli.Command {
 					Name:  "machine,m",
 					Usage: "Comma separated machine ids, e.g uuid1,uuid2",
 					Value: "",
+				},
+			},
+		},
+		{
+			Name:   "ClusterKey",
+			Usage:  "set cluster wide key",
+			Action: c.setClusterkey,
+			Flags: []cli.Flag{
+				cli.StringFlag{
+					Name:  "clustersecretkey",
+					Usage: "clustersecretkey",
 				},
 			},
 		},

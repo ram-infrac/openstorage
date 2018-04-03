@@ -23,6 +23,8 @@ type clusterApi struct {
 	restBase
 }
 
+var SecretManager *secrets.Manager
+
 func newClusterAPI() restServer {
 	return &clusterApi{restBase{version: cluster.APIVersion, name: "Cluster API"}}
 }
@@ -714,6 +716,6 @@ func handleResourceType(resource string) (api.ResourceType, error) {
 }
 
 func (c *clusterApi) RegisterSecretManager(sec secrets.SecretManager) *secrets.Manager {
-	sm := secrets.NewSecretManager(sec)
-	return sm
+	SecretManager = secrets.NewSecretManager(sec)
+	return SecretManager
 }

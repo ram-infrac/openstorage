@@ -1671,25 +1671,60 @@ func (c *ClusterManager) putNodeCacheEntry(nodeId string, node api.Node) {
 
 // osdconfig.ConfigCaller compliance
 func (c *ClusterManager) GetClusterConf() (*osdconfig.ClusterConfig, error) {
+	fmt.Println("Node Config")
 	return c.configManager.GetClusterConf()
 }
 
 func (c *ClusterManager) GetNodeConf(nodeID string) (*osdconfig.NodeConfig, error) {
+	fmt.Println("Node Config")
 	return c.configManager.GetNodeConf(nodeID)
 }
 
 func (c *ClusterManager) SetClusterConf(config *osdconfig.ClusterConfig) error {
+	fmt.Println("Node Config")
 	return c.configManager.SetClusterConf(config)
 }
 
 func (c *ClusterManager) SetNodeConf(config *osdconfig.NodeConfig) error {
+	fmt.Println("Node Config")
 	return c.configManager.SetNodeConf(config)
 }
 
 func (c *ClusterManager) DeleteNodeConf(nodeID string) error {
+	fmt.Println("Node Config")
 	return c.configManager.DeleteNodeConf(nodeID)
 }
 
 func (c *ClusterManager) EnumerateNodeConf() (*osdconfig.NodesConfig, error) {
+	fmt.Println("Node Config")
 	return c.configManager.EnumerateNodeConf()
+}
+
+func (c *ClusterManager) SecretLogin(secretType int, secretConfig map[string]string) error {
+	fmt.Println("secret dummy")
+	return nil
+}
+
+// SetClusterSecretKey sets the cluster wide secret key
+func (c *ClusterManager) SetClusterSecretKey(secretKey string, override bool) error {
+	fmt.Println("secret dummy")
+	return nil
+}
+
+//CheckSecretLogin validates session with secret store
+func (c *ClusterManager) CheckSecretLogin() error {
+	fmt.Println("secret dummy")
+	return nil
+}
+
+//SetSecret sets secret key against data
+func (c *ClusterManager) SetSecret(key string, value string) error {
+	fmt.Println("secret dummy")
+	return nil
+}
+
+// GetSecret retrieves the data for the given feature and key
+func (c *ClusterManager) GetSecret(key string) (string, error) {
+	fmt.Println("secret dummy")
+	return "", nil
 }

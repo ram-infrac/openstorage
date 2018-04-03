@@ -12,6 +12,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/libopenstorage/openstorage/secrets"
 	"github.com/libopenstorage/openstorage/secrets/fake"
+	"github.com/libopenstorage/openstorage/secrets/testfake"
 )
 
 // Route is a specification and  handler for a REST endpoint.
@@ -117,7 +118,8 @@ func StartVolumePluginAPI(
 // from the CLI/UX to control the OSD cluster.
 func StartClusterAPI(clusterApiBase string, clusterPort uint16) error {
 	clusterApi := newClusterAPI()
-	if err := startServer("osd", clusterApiBase, clusterPort, clusterApi.Routes()); err != nil {
+	clusterApi.RegisterSecretManager(fake.New())
+	if err := startServer("osd", clusterApiBase, 8001, clusterApi.Routes()); err != nil {
 		return err
 	}
 
@@ -126,6 +128,7 @@ func StartClusterAPI(clusterApiBase string, clusterPort uint16) error {
 
 func GetClusterAPIRoutes() []*Route {
 	clusterApi := newClusterAPI()
+	clusterApi.RegisterSecretManager(testfake.New())
 	return clusterApi.Routes()
 }
 
@@ -138,12 +141,6 @@ func startServer(name string, sockBase string, port uint16, routes []*Route) err
 	router.NotFoundHandler = http.HandlerFunc(notFound)
 	for _, v := range routes {
 		router.Methods(v.verb).Path(v.path).HandlerFunc(v.fn)
-	}
-	//Add only to cluster routes
-	clusterApi := newClusterAPI()
-	sm := clusterApi.RegisterSecretManager(fake.New())
-	for _, v := range sm.Routes() {
-		router.Methods(v.Verb).Path(v.Path).HandlerFunc(v.Fn)
 	}
 	socket := path.Join(sockBase, name+".sock")
 	os.Remove(socket)

@@ -244,12 +244,12 @@ func (c *clusterClient) CheckSecretLogin() error {
 	return nil
 }
 
-func (c *clusterClient) SecretLogin(secret string, secretConfig map[string]string) error {
+func (c *clusterClient) SecretLogin(secret int, secretConfig map[string]string) error {
 	reqBody := &secrets.SecretLoginRequest{
 		SecretConfig: secretConfig,
 	}
 	request := c.c.Post().Resource("/secretlogin").Body(reqBody)
-	request.QueryOption(secrets.SecretType, secret)
+	request.QueryOption(secrets.SecretType, string(secret))
 
 	resp := request.Do()
 
