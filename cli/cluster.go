@@ -13,10 +13,12 @@ import (
 	"github.com/libopenstorage/openstorage/api"
 	clusterclient "github.com/libopenstorage/openstorage/api/client/cluster"
 	"github.com/libopenstorage/openstorage/cluster"
+	"github.com/libopenstorage/openstorage/secrets"
 )
 
 type clusterClient struct {
-	manager cluster.Cluster
+	manager   cluster.Cluster
+	secretMgr secrets.SecretManager
 }
 
 func (c *clusterClient) clusterOptions(context *cli.Context) {
@@ -28,6 +30,7 @@ func (c *clusterClient) clusterOptions(context *cli.Context) {
 	}
 	fmt.Println("Initiated Cluster Client from cli")
 	c.manager = clusterclient.ClusterManager(clnt)
+	c.secretMgr = clusterclient.SecretManager(clnt)
 }
 
 func (c *clusterClient) status(context *cli.Context) {
@@ -101,7 +104,7 @@ func (c *clusterClient) shutdown(context *cli.Context) {
 func (c *clusterClient) setClusterkey(context *cli.Context) {
 	c.clusterOptions(context)
 	fn := "setClusterkey"
-	err := c.manager.SetClusterSecretKey(context.String("clustersecretkey"), false)
+	err := c.secretMgr.SetClusterSecretKey(context.String("clustersecretkey"), false)
 	if err != nil {
 		cmdError(context, fn, err)
 		return
