@@ -1698,26 +1698,31 @@ func (c *ClusterManager) EnumerateNodeConf() (*osdconfig.NodesConfig, error) {
 //We can create custom secretclient i.e Rest wrapper over SecretManager
 //may be related to issue :  #382 (https://github.com/libopenstorage/openstorage/issues/382)
 //TODO : Find cleaner way for this
-func (c *ClusterManager) SecretLogin(secretType int, secretConfig map[string]string) error {
+func (c *ClusterManager) Login(secretType string, secretConfig map[string]string) error {
 	return nil
 }
 
 // SetClusterSecretKey sets the cluster wide secret key
-func (c *ClusterManager) SetClusterSecretKey(secretKey string, override bool) error {
+func (c *ClusterManager) SetDefaultSecretKey(secretKey string, override bool) error {
 	return nil
 }
 
 //CheckSecretLogin validates session with secret store
-func (c *ClusterManager) CheckSecretLogin() error {
+func (c *ClusterManager) CheckLogin() error {
 	return nil
 }
 
 //SetSecret sets secret key against data
-func (c *ClusterManager) SetSecret(key string, value string) error {
+func (c *ClusterManager) Set(key string, value interface{}) error {
 	return nil
 }
 
 // GetSecret retrieves the data for the given feature and key
-func (c *ClusterManager) GetSecret(key string) (string, error) {
+func (c *ClusterManager) Get(string) (interface{}, error) {
 	return "", nil
+}
+
+// GetDefaultSecretKey return cluster wide secret key
+func (c *ClusterManager) GetDefaultSecretKey() (interface{}, error) {
+	return nil, nil
 }
