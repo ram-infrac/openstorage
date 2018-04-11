@@ -201,29 +201,22 @@ func (c *clusterClient) SetDefaultSecretKey(secretKey string, override bool) err
 		Override:         override,
 	}
 	path := clusterPath + secretPath + "/defaultsecretkey"
-
 	request := c.c.Put().Resource(path).Body(reqBody)
-
 	resp := request.Do()
 	if resp.Error() != nil {
 		return resp.FormatError()
 	}
-
 	return nil
 }
 
 func (c *clusterClient) GetDefaultSecretKey() (interface{}, error) {
-
 	var defaultKey string
 	path := clusterPath + secretPath + "/defaultsecretkey"
-
 	request := c.c.Get().Resource(path)
-
 	err := request.Do().Unmarshal(&defaultKey)
 	if err != nil {
 		return defaultKey, err
 	}
-
 	return defaultKey, nil
 }
 
@@ -232,22 +225,20 @@ func (c *clusterClient) Set(secretID string, secretValue interface{}) error {
 		SecretValue: secretValue,
 	}
 	path := clusterPath + secretPath + "/"
-
+	//request.QueryOption(secrets.SecretKey, secretID)
 	request := c.c.Put().Resource(path + secretID).Body(reqBody)
 	resp := request.Do()
-
 	if resp.Error() != nil {
 		return resp.FormatError()
 	}
-
 	return nil
 }
 
 func (c *clusterClient) Get(secretID string) (interface{}, error) {
 	var secResp string
 	path := clusterPath + secretPath + "/"
-
 	request := c.c.Get().Resource(path + secretID)
+	//request.QueryOption(secrets.SecretKey, secretID)
 	if err := request.Do().Unmarshal(&secResp); err != nil {
 		return secResp, err
 	}
@@ -258,11 +249,10 @@ func (c *clusterClient) Get(secretID string) (interface{}, error) {
 func (c *clusterClient) CheckLogin() error {
 	path := clusterPath + secretPath + "/verify"
 	request := c.c.Get().Resource(path)
-
 	if err := request.Do(); err != nil {
-		return err.FormatError()
+		return nil
+		//	return err.FormatError()
 	}
-
 	return nil
 }
 
@@ -272,9 +262,7 @@ func (c *clusterClient) Login(secretType string, secretConfig map[string]string)
 		SecretConfig: secretConfig,
 	}
 	path := clusterPath + secretPath + "/login/"
-
 	request := c.c.Post().Resource(path).Body(reqBody)
-
 	resp := request.Do()
 	if resp.Error() != nil {
 		return resp.FormatError()
