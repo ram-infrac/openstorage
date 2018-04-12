@@ -1,27 +1,24 @@
 package server
 
 import (
-	//"fmt"
 	//	"errors"
-	"testing"
-
+	"fmt"
 	clusterclient "github.com/libopenstorage/openstorage/api/client/cluster"
+	"testing"
 	//"github.com/libopenstorage/openstorage/secrets"
+	//"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 )
 
-/*
 func TestSetDefaultSecretKey(t *testing.T) {
-
-	// Create a new global test cluster
-	ts, tc := testClusterServer(t)
+	ts, tc := testClusterSecrets(t)
 	defer ts.Close()
 	defer tc.Finish()
 
 	secretKey := "testkey"
 	overrideFlag := true
 	// mock the cluster response
-	tc.MockCluster().
+	tc.MockClusterSecrets().
 		EXPECT().
 		SetDefaultSecretKey(secretKey, overrideFlag).
 		Return(nil)
@@ -32,11 +29,11 @@ func TestSetDefaultSecretKey(t *testing.T) {
 
 	// make the REST call
 	restClient := clusterclient.ClusterManager(c)
-	err = restClient.SetDefaultSecretKey("testsecretkey", false)
+	err = restClient.SetDefaultSecretKey(secretKey, overrideFlag)
 	assert.NoError(t, err)
 	//assert.Contains(t, err.Error(), "Not Implemented")
 }
-*/
+
 /*
 func TestGetDefaultSecretKey(t *testing.T) {
 
@@ -144,15 +141,13 @@ func TestSet(t *testing.T) {
 func TestVerify(t *testing.T) {
 
 	// Create a new global test cluster
-	ts, tc := testClusterServer(t)
+	ts, tc := testClusterSecrets(t)
 	defer ts.Close()
 	defer tc.Finish()
 
 	// mock the cluster response
-	tc.MockCluster().
-		EXPECT().
-		CheckLogin().
-		Return(nil)
+	tc.MockClusterSecrets().EXPECT().CheckLogin().Return(nil)
+	//	Return(fmt.Errorf("Not Implemented")).Times(1)
 
 	// create a cluster client to make the REST call
 	c, err := clusterclient.NewClusterClient(ts.URL, "v1")
@@ -161,7 +156,7 @@ func TestVerify(t *testing.T) {
 	// make the REST call
 	restClient := clusterclient.ClusterManager(c)
 	err = restClient.CheckLogin()
+	fmt.Println("err", err)
 	assert.NoError(t, err)
-	//fmt.Println("val", secretValue)
-	//assert.Contains(t, err.Error(), "500")
+	//assert.Contains(t, err.Error(), nil)
 }

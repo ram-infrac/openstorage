@@ -1,3 +1,4 @@
+//go:generate mockgen -package=mock -destination=mock/secrets.mock.go github.com/libopenstorage/openstorage/secrets Secrets
 package secrets
 
 import (
@@ -57,7 +58,7 @@ func (f *nullSecretManager) GetDefaultSecretKey() (interface{}, error) {
 }
 
 func (f *nullSecretManager) CheckLogin() error {
-	return ErrNotImplemented
+	return nil
 }
 
 func (f *nullSecretManager) Set(secretKey string, secretValue interface{}) error {
