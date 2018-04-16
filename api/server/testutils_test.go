@@ -12,6 +12,7 @@ import (
 	"github.com/stretchr/testify/assert"
 
 	mockcluster "github.com/libopenstorage/openstorage/cluster/mock"
+	mocksecrets "github.com/libopenstorage/openstorage/secrets/mock"
 	"github.com/libopenstorage/openstorage/volume"
 	volumedrivers "github.com/libopenstorage/openstorage/volume/drivers"
 	mockdriver "github.com/libopenstorage/openstorage/volume/drivers/mock"
@@ -37,6 +38,7 @@ type testCluster struct {
 	c       *mockcluster.MockCluster
 	mc      *gomock.Controller
 	oldInst func() (cluster.Cluster, error)
+	sm      *mocksecrets.MockSecrets
 }
 
 func newTestCluster(t *testing.T) *testCluster {
@@ -57,6 +59,17 @@ func newTestCluster(t *testing.T) *testCluster {
 		return tester.c, nil
 	}
 
+	return tester
+}
+
+func newTestClusterSecret(t *testing.T) *testCluster {
+	tester := &testCluster{}
+
+	// Create mock controller
+	tester.mc = gomock.NewController(&utils.SafeGoroutineTester{})
+
+	// Create a new mock Serets
+	tester.sm = mocksecrets.NewMockSecrets(tester.mc)
 	return tester
 }
 
@@ -121,8 +134,29 @@ func testClusterServer(t *testing.T) (*httptest.Server, *testCluster) {
 	return ts, tc
 }
 
+func testClusterSecrets(t *testing.T) (*httptest.Server, *testCluster) {
+	tc := newTestClusterSecret(t)
+	capi := newClusterAPI(ClusterServerConfiguration{
+		ConfigSecretManager: secrets.NewSecretManager(tc.sm),
+	})
+	router := mux.NewRouter()
+	// Register all routes from the App
+	for _, route := range capi.Routes() {
+		router.Methods(route.verb).
+			Path(route.path).
+			Name(mockDriverName).
+			Handler(http.HandlerFunc(route.fn))
+	}
+
+	ts := httptest.NewServer(router)
+	return ts, tc
+}
+
 func (c *testCluster) MockCluster() *mockcluster.MockCluster {
 	return c.c
+}
+func (c *testCluster) MockClusterSecrets() *mocksecrets.MockSecrets {
+	return c.sm
 }
 
 func (c *testCluster) Finish() {

@@ -210,14 +210,14 @@ func (c *clusterClient) SetDefaultSecretKey(secretKey string, override bool) err
 }
 
 func (c *clusterClient) GetDefaultSecretKey() (interface{}, error) {
-	var defaultKey string
+	defaultKeyResp := new(secrets.GetSecretResponse)
 	path := clusterPath + secretPath + "/defaultsecretkey"
 	request := c.c.Get().Resource(path)
-	err := request.Do().Unmarshal(&defaultKey)
+	err := request.Do().Unmarshal(defaultKeyResp)
 	if err != nil {
-		return defaultKey, err
+		return defaultKeyResp, err
 	}
-	return defaultKey, nil
+	return defaultKeyResp, nil
 }
 
 func (c *clusterClient) Set(secretID string, secretValue interface{}) error {
@@ -235,7 +235,7 @@ func (c *clusterClient) Set(secretID string, secretValue interface{}) error {
 }
 
 func (c *clusterClient) Get(secretID string) (interface{}, error) {
-	var secResp string
+	var secResp secrets.GetSecretResponse
 	path := clusterPath + secretPath
 	request := c.c.Get().Resource(path)
 	request.QueryOption(secrets.SecretKey, secretID)
@@ -247,10 +247,11 @@ func (c *clusterClient) Get(secretID string) (interface{}, error) {
 
 //Check whether session is still authenticated
 func (c *clusterClient) CheckLogin() error {
+	var loginResp secrets.SecretStatusResponse
 	path := clusterPath + secretPath + "/verify"
 	request := c.c.Get().Resource(path)
-	if err := request.Do(); err != nil {
-		return err.FormatError()
+	if err := request.Do().Unmarshal(&loginResp); err != nil {
+		return err
 	}
 	return nil
 }
