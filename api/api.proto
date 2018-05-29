@@ -879,10 +879,12 @@ service OpenStorageCredentials {
 }
 
 message ProvideCredentialsForAzureRequest {
+  // Cred Type
+  string cred_type = 1;
   // Account name
-  string account_name = 1;
+  string account_name = 2;
   // Account key
-  string account_key = 2;
+  string account_key = 3;
 }
 
 message ProvideCredentialsForAzureResponse {
@@ -891,10 +893,12 @@ message ProvideCredentialsForAzureResponse {
 }
 
 message ProvideCredentialsForGoogleRequest {
+  // Cred Type
+  string cred_type = 1;
   // Project ID
-  string project_id = 1;
+  string project_id = 2;
   // JSON Key
-  string json_key = 2;
+  string json_key = 3;
 }
 
 message ProvideCredentialsForGoogleResponse {
@@ -903,14 +907,18 @@ message ProvideCredentialsForGoogleResponse {
 }
 
 message ProvideCredentialsForAWSRequest {
+  // Cred Type
+  string cred_type = 1;
   // Access key
-  string access_key = 1;
+  string access_key = 2;
   // Secret key
-  string secret_key = 2;
+  string secret_key = 3;
   // Endpoint
-  string endpoint = 3;
+  string endpoint = 4;
   // Region
-  string region = 4;
+  string region = 5;
+  // // Disable SSL
+  // bool disable_SSL = 6;
 }
 
 message ProvideCredentialsForAWSResponse {
