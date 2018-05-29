@@ -18,6 +18,7 @@ package sdk
 
 import (
 	"context"
+	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -47,10 +48,62 @@ func TestSdkCredentialCreateSuccess(t *testing.T) {
 	params[api.OptCredAccessKey] = req.GetAccessKey()
 	params[api.OptCredSecretKey] = req.GetSecretKey()
 
+	uuid := "good-uuid"
 	s.MockDriver().
 		EXPECT().
 		CredsCreate(params).
-		Return("good-uuid", nil)
+		Return(uuid, nil)
+
+	s.MockDriver().
+		EXPECT().
+		CredsValidate(uuid).
+		Return(nil)
+
+		// Setup client
+	c := api.NewOpenStorageCredentialsClient(s.Conn())
+
+	// Attach Volume
+	_, err := c.ProvideForAWS(context.Background(), req)
+	assert.NoError(t, err)
+}
+
+func TestSdkCredentialCreateFailed(t *testing.T) {
+
+	// Create server and client connection
+	s := newTestServer(t)
+	defer s.Stop()
+
+	req := &api.ProvideCredentialsForAWSRequest{
+		CredType:  "s3",
+		AccessKey: "dummy-access",
+		SecretKey: "dummy-secret",
+		Endpoint:  "dummy-endpoint",
+		Region:    "dummy-region",
+	}
+
+	params := make(map[string]string)
+
+	params[api.OptCredType] = req.GetCredType()
+	params[api.OptCredRegion] = req.GetRegion()
+	params[api.OptCredEndpoint] = req.GetEndpoint()
+	params[api.OptCredAccessKey] = req.GetAccessKey()
+	params[api.OptCredSecretKey] = req.GetSecretKey()
+
+	uuid := "bad-uuid"
+	s.MockDriver().
+		EXPECT().
+		CredsCreate(params).
+		Return(uuid, nil)
+
+	s.MockDriver().
+		EXPECT().
+		CredsValidate(uuid).
+		Return(fmt.Errorf("Invalid credentials"))
+
+	s.MockDriver().
+		EXPECT().
+		CredsDelete(uuid).
+		Return(nil)
 
 		// Setup client
 	c := api.NewOpenStorageCredentialsClient(s.Conn())

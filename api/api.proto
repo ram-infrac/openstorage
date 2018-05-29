@@ -834,6 +834,24 @@ service OpenStorageCredentials {
       };
     }
 
+  // Validate a specified credential
+  rpc CredentialsValidate(CredentialsValidateRequest)
+    returns (CredentialsValidateResponse) {
+      option(google.api.http) = {
+        post: "/v1/credentials/validate"
+        body: "*"
+      };
+    }
+
+  // Delete stored credentials
+  rpc CredentialsDelete(CredentialsDeleteRequest)
+    returns (CredentialsDeleteResponse) {
+      option(google.api.http) = {
+        post: "/v1/credentials/delete"
+        body: "*"
+      };
+    }
+
   // rpc EnumerateForAWS(EnumerateCredentialsForAWSRequest)
   //   returns (EnumerateCredentialsForAWSResponse) {
   //   option(google.api.http) = {
@@ -855,24 +873,6 @@ service OpenStorageCredentials {
   //     returns (EnumerateCredentialsForGoogleResponse) {
   //     option(google.api.http) = {
   //       post: "/v1/credentials/enumerate/google"
-  //       body: "*"
-  //     };
-  //   }
-
-  // // Delete stored credentials
-  // rpc Delete(CredentialsDeleteRequest)
-  //     returns (CredentialsDeleteResponse) {
-  //     option(google.api.http) = {
-  //       post: "/v1/credentials/delete"
-  //       body: "*"
-  //     };
-  //   }
-
-  // // Validate a specified credential
-  // rpc Validate(CredentialsValidateRequest)
-  //     returns (CredentialsValidateResponse) {
-  //     option(google.api.http) = {
-  //       post: "/v1/credentials/validate"
   //       body: "*"
   //     };
   //   }
@@ -936,21 +936,21 @@ message ProvideCredentialsForAWSResponse {
 //   string credential_id = 1;
 // }
 
-// message CredentialsDeleteRequest {
-//   // Id of the credentials
-//   string credential_id = 1;
-// }
+message CredentialsDeleteRequest {
+  // Id of the credentials
+  string credential_id = 1;
+}
 
-// message CredentialsDeleteResponse {
-// }
+message CredentialsDeleteResponse {
+}
 
-// message CredentialsValidateRequest {
-//   // Id of the credentials
-//   string credential_id = 1;
-// }
+message CredentialsValidateRequest {
+  // Id of the credentials
+  string credential_id = 1;
+}
 
-// message CredentialsValidateResponse {
-// }
+message CredentialsValidateResponse {
+}
 
 
 message VolumeMountRequest {

@@ -48,7 +48,7 @@ func (s *VolumeServer) ProvideForAWS(
 
 	params := make(map[string]string)
 
-	params[api.OptCredType] = req.GetCredType()
+	params[api.OptCredType] = "s3" //req.GetCredType()
 	params[api.OptCredRegion] = req.GetRegion()
 	params[api.OptCredEndpoint] = req.GetEndpoint()
 	params[api.OptCredAccessKey] = req.GetAccessKey()
@@ -62,6 +62,23 @@ func (s *VolumeServer) ProvideForAWS(
 			"failed to create AWS S3 credentials: %v",
 			err.Error())
 	}
+
+	// Validate if the credentials provided were correct or not
+	validateReq := &api.CredentialsValidateRequest{CredentialId: uuid}
+
+	err = s.driver.CredsValidate(validateReq.GetCredentialId())
+
+	if err != nil {
+		deleteCred := &api.CredentialsDeleteRequest{CredentialId: uuid}
+		err = s.driver.CredsDelete(deleteCred.GetCredentialId())
+
+		if err != nil {
+			return nil, status.Errorf(
+				codes.Internal,
+				"failed to delete AWS S3 credentials: %v",
+				err.Error())
+		}
+	}
 	return &api.ProvideCredentialsForAWSResponse{CredentialId: uuid}, nil
 
 }
@@ -71,8 +88,30 @@ func (s *VolumeServer) ProvideForAzure(
 	req *api.ProvideCredentialsForAzureRequest,
 ) (*api.ProvideCredentialsForAzureResponse, error) {
 
-	return &api.ProvideCredentialsForAzureResponse{CredentialId: "dummy-azure"}, nil
+	if len(req.GetAccountKey()) == 0 {
+		return nil, status.Error(codes.InvalidArgument, "Must supply Account Key")
+	}
 
+	if len(req.GetAccountName()) == 0 {
+		return nil, status.Error(codes.InvalidArgument, "Must supply Account name")
+	}
+
+	params := make(map[string]string)
+
+	params[api.OptCredType] = "azure"
+	params[api.OptCredAzureAccountKey] = req.GetAccountKey()
+	params[api.OptCredAzureAccountName] = req.GetAccountName()
+
+	uuid, err := s.driver.CredsCreate(params)
+
+	if err != nil {
+		return nil, status.Errorf(
+			codes.Internal,
+			"failed to create Azure credentials: %v",
+			err.Error())
+	}
+
+	return &api.ProvideCredentialsForAzureResponse{CredentialId: uuid}, nil
 }
 
 func (s *VolumeServer) ProvideForGoogle(
@@ -80,5 +119,45 @@ func (s *VolumeServer) ProvideForGoogle(
 	req *api.ProvideCredentialsForGoogleRequest,
 ) (*api.ProvideCredentialsForGoogleResponse, error) {
 
-	return &api.ProvideCredentialsForGoogleResponse{CredentialId: "dummy-google"}, nil
+	if len(req.GetJsonKey()) == 0 {
+		return nil, status.Error(codes.InvalidArgument, "Must supply JSON Key")
+	}
+
+	if len(req.GetProjectId()) == 0 {
+		return nil, status.Error(codes.InvalidArgument, "Must supply Project ID")
+	}
+
+	params := make(map[string]string)
+
+	params[api.OptCredType] = "google" //req.GetCredType()
+	params[api.OptCredGoogleProjectID] = req.GetProjectId()
+	params[api.OptCredGoogleJsonKey] = req.GetJsonKey()
+
+	uuid, err := s.driver.CredsCreate(params)
+
+	if err != nil {
+		return nil, status.Errorf(
+			codes.Internal,
+			"failed to create Google credentials: %v",
+			err.Error())
+	}
+	return &api.ProvideCredentialsForGoogleResponse{CredentialId: uuid}, nil
+}
+
+func (s *VolumeServer) CredentialsValidate(
+	ctx context.Context,
+	req *api.CredentialsValidateRequest,
+) (*api.CredentialsValidateResponse, error) {
+
+	return &api.CredentialsValidateResponse{}, nil
+
+}
+
+func (s *VolumeServer) CredentialsDelete(
+	ctx context.Context,
+	req *api.CredentialsDeleteRequest,
+) (*api.CredentialsDeleteResponse, error) {
+
+	return &api.CredentialsDeleteResponse{}, nil
+
 }

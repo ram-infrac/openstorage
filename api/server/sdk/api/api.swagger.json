@@ -204,6 +204,33 @@
         ]
       }
     },
+    "/v1/credentials/delete": {
+      "post": {
+        "summary": "Delete stored credentials",
+        "operationId": "CredentialsDelete",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/apiCredentialsDeleteResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/apiCredentialsDeleteRequest"
+            }
+          }
+        ],
+        "tags": [
+          "OpenStorageCredentials"
+        ]
+      }
+    },
     "/v1/credentials/provide/aws": {
       "post": {
         "summary": "Provide credentials to OpenStorage and if valid,\nit will return an identifier to the credentials",
@@ -223,6 +250,33 @@
             "required": true,
             "schema": {
               "$ref": "#/definitions/apiProvideCredentialsForAWSRequest"
+            }
+          }
+        ],
+        "tags": [
+          "OpenStorageCredentials"
+        ]
+      }
+    },
+    "/v1/credentials/validate": {
+      "post": {
+        "summary": "Validate a specified credential",
+        "operationId": "CredentialsValidate",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/apiCredentialsValidateResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/apiCredentialsValidateRequest"
             }
           }
         ],
@@ -731,6 +785,30 @@
         "HIGH"
       ],
       "default": "NONE"
+    },
+    "apiCredentialsDeleteRequest": {
+      "type": "object",
+      "properties": {
+        "credential_id": {
+          "type": "string",
+          "title": "Id of the credentials"
+        }
+      }
+    },
+    "apiCredentialsDeleteResponse": {
+      "type": "object"
+    },
+    "apiCredentialsValidateRequest": {
+      "type": "object",
+      "properties": {
+        "credential_id": {
+          "type": "string",
+          "title": "Id of the credentials"
+        }
+      }
+    },
+    "apiCredentialsValidateResponse": {
+      "type": "object"
     },
     "apiFSType": {
       "type": "string",
