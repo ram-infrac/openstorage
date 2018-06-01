@@ -71,8 +71,8 @@ func (s *VolumeServer) ProvideForAWS(
 	err = s.driver.CredsValidate(validateReq.GetCredentialId())
 
 	if err != nil {
-		deleteCred := &api.CredentialsDeleteRequest{CredentialId: uuid}
-		err = s.driver.CredsDelete(deleteCred.GetCredentialId())
+		deleteCred := &api.CredentialsDeleteRequest{CredentailId: uuid}
+		err = s.driver.CredsDelete(deleteCred.GetCredentailId())
 
 		if err != nil {
 			return nil, status.Errorf(
