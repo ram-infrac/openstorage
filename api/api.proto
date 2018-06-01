@@ -989,7 +989,7 @@ message EnumerateCredentialsForGoogleResponse {
 }                            
 message CredentialsDeleteRequest {                                                   
     // ID for credentials                                                       
-    string credentail_id = 1;                                                   
+    string credential_id = 1;                                                   
 }  
 
 message CredentialsDeleteResponse {                                                  

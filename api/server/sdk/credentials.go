@@ -50,7 +50,7 @@ func (s *VolumeServer) ProvideForAWS(
 
 	params := make(map[string]string)
 
-	params[api.OptCredType] = "s3" //req.GetCredType()
+	params[api.OptCredType] = "s3"
 	params[api.OptCredRegion] = req.GetRegion()
 	params[api.OptCredEndpoint] = req.GetEndpoint()
 	params[api.OptCredAccessKey] = req.GetAccessKey()
@@ -61,25 +61,31 @@ func (s *VolumeServer) ProvideForAWS(
 	if err != nil {
 		return nil, status.Errorf(
 			codes.Internal,
-			"failed to create AWS S3 credentials: %v",
+			"failed to create S3 credentials: %v",
 			err.Error())
 	}
 
 	// Validate if the credentials provided were correct or not
 	validateReq := &api.CredentialsValidateRequest{CredentialId: uuid}
 
-	err = s.driver.CredsValidate(validateReq.GetCredentialId())
+	validateErr := s.driver.CredsValidate(validateReq.GetCredentialId())
 
-	if err != nil {
-		deleteCred := &api.CredentialsDeleteRequest{CredentailId: uuid}
-		err = s.driver.CredsDelete(deleteCred.GetCredentailId())
+	if validateErr != nil {
+		deleteCred := &api.CredentialsDeleteRequest{CredentialId: uuid}
+		err = s.driver.CredsDelete(deleteCred.GetCredentialId())
 
 		if err != nil {
 			return nil, status.Errorf(
 				codes.Internal,
-				"failed to delete AWS S3 credentials: %v",
+				"failed to delete invalid S3 credentials: %v",
 				err.Error())
 		}
+
+		return nil, status.Errorf(
+			codes.Internal,
+			"credentials could not be validated: %v",
+			validateErr.Error())
+
 	}
 	return &api.ProvideCredentialsForAWSResponse{CredentialId: uuid}, nil
 
@@ -113,6 +119,27 @@ func (s *VolumeServer) ProvideForAzure(
 			err.Error())
 	}
 
+	// Validate if the credentials provided were correct or not
+	validateReq := &api.CredentialsValidateRequest{CredentialId: uuid}
+
+	validateErr := s.driver.CredsValidate(validateReq.GetCredentialId())
+
+	if validateErr != nil {
+		deleteCred := &api.CredentialsDeleteRequest{CredentialId: uuid}
+		err = s.driver.CredsDelete(deleteCred.GetCredentialId())
+
+		if err != nil {
+			return nil, status.Errorf(
+				codes.Internal,
+				"failed to delete invalid Azure credentials: %v",
+				err.Error())
+		}
+
+		return nil, status.Errorf(
+			codes.Internal,
+			"credentials could not be validated: %v",
+			validateErr.Error())
+	}
 	return &api.ProvideCredentialsForAzureResponse{CredentialId: uuid}, nil
 }
 
@@ -143,6 +170,29 @@ func (s *VolumeServer) ProvideForGoogle(
 			"failed to create Google credentials: %v",
 			err.Error())
 	}
+
+	// Validate if the credentials provided were correct or not
+	validateReq := &api.CredentialsValidateRequest{CredentialId: uuid}
+
+	validateErr := s.driver.CredsValidate(validateReq.GetCredentialId())
+
+	if validateErr != nil {
+		deleteCred := &api.CredentialsDeleteRequest{CredentialId: uuid}
+		err = s.driver.CredsDelete(deleteCred.GetCredentialId())
+
+		if err != nil {
+			return nil, status.Errorf(
+				codes.Internal,
+				"failed to delete invalid Google credentials: %v",
+				err.Error())
+		}
+
+		return nil, status.Errorf(
+			codes.Internal,
+			"credentials could not be validated: %v",
+			validateErr.Error())
+
+	}
 	return &api.ProvideCredentialsForGoogleResponse{CredentialId: uuid}, nil
 }
 
@@ -151,6 +201,20 @@ func (s *VolumeServer) CredentialsValidate(
 	req *api.CredentialsValidateRequest,
 ) (*api.CredentialsValidateResponse, error) {
 
+	if len(req.GetCredentialId()) == 0 {
+		return nil, status.Error(codes.InvalidArgument, "Must provide credentials uuid")
+	}
+
+	validateReq := &api.CredentialsValidateRequest{CredentialId: req.GetCredentialId()}
+
+	err := s.driver.CredsValidate(validateReq.GetCredentialId())
+
+	if err != nil {
+		return nil, status.Errorf(
+			codes.Internal,
+			"failed to validate credentials: %v",
+			err.Error())
+	}
 	return &api.CredentialsValidateResponse{}, nil
 
 }
@@ -161,11 +225,11 @@ func (s *VolumeServer) CredentialsDelete(
 	req *api.CredentialsDeleteRequest,
 ) (*api.CredentialsDeleteResponse, error) {
 
-	if len(req.GetCredentailId()) == 0 {
+	if len(req.GetCredentialId()) == 0 {
 		return nil, status.Error(codes.InvalidArgument, "Must provide credentials uuid")
 	}
 
-	err := s.driver.CredsDelete(req.GetCredentailId())
+	err := s.driver.CredsDelete(req.GetCredentialId())
 	if err != nil {
 		return nil, status.Errorf(
 			codes.Internal,

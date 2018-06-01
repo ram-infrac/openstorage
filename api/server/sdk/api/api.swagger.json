@@ -887,7 +887,7 @@
     "apiCredentialsDeleteRequest": {
       "type": "object",
       "properties": {
-        "credentail_id": {
+        "credential_id": {
           "type": "string",
           "title": "ID for credentials"
         }
