@@ -456,15 +456,31 @@ func TestSdkCredentialEnumerateAWSSuccess(t *testing.T) {
 
 	req := &api.CredentialEnumerateAWSRequest{CredentialId: "test"}
 
-	enumS3 := map[string]interface{}{
+	enumS3test1 := map[string]interface{}{
 		api.OptCredType:      "s3",
 		api.OptCredAccessKey: "test-access",
 		api.OptCredSecretKey: "test-secret",
 		api.OptCredEndpoint:  "test-endpoint",
 		api.OptCredRegion:    "test-region",
 	}
+
+	enumS3test2 := map[string]interface{}{
+		api.OptCredType:      "s3",
+		api.OptCredAccessKey: "test-access1",
+		api.OptCredSecretKey: "test-secret1",
+		api.OptCredEndpoint:  "test-endpoint1",
+		api.OptCredRegion:    "test-region1",
+	}
+
+	enumAzure := map[string]interface{}{
+		api.OptCredType:             "azure",
+		api.OptCredAzureAccountName: "test-azure-account",
+		api.OptCredAzureAccountKey:  "test-azure-account",
+	}
 	enumerateData := map[string]interface{}{
-		api.OptCredUUID: enumS3,
+		"test-cred-uuid1": enumS3test1,
+		"test-cred-uuid3": enumAzure,
+		"test-cred-uui2":  enumS3test2,
 	}
 
 	s.MockDriver().
@@ -479,6 +495,56 @@ func TestSdkCredentialEnumerateAWSSuccess(t *testing.T) {
 	resp, err := c.EnumerateForAWS(context.Background(), req)
 	assert.NoError(t, err)
 
+	assert.Len(t, resp.GetCred(), 2)
+}
+
+func TestSdkCredentialEnumerateAWSWithMultipleCredResponseSuccess(t *testing.T) {
+
+	// Create server and client connection
+	s := newTestServer(t)
+	defer s.Stop()
+
+	req := &api.CredentialEnumerateAWSRequest{CredentialId: "test"}
+
+	enumS3 := map[string]interface{}{
+		api.OptCredType:      "s3",
+		api.OptCredAccessKey: "test-access",
+		api.OptCredSecretKey: "test-secret",
+		api.OptCredEndpoint:  "test-endpoint",
+		api.OptCredRegion:    "test-region",
+	}
+
+	enumAzure := map[string]interface{}{
+		api.OptCredType:             "azure",
+		api.OptCredAzureAccountName: "test-azure-account",
+		api.OptCredAzureAccountKey:  "test-azure-account",
+	}
+
+	enumGoogle := map[string]interface{}{
+		api.OptCredType:            "google",
+		api.OptCredGoogleProjectID: "test-google-project-id",
+	}
+
+	enumerateData := map[string]interface{}{
+		"test-s3-uuid1":     enumS3,
+		"test-azure-uuid1":  enumAzure,
+		"test-Google-uuid1": enumGoogle,
+	}
+
+	s.MockDriver().
+		EXPECT().
+		CredsEnumerate().
+		Return(enumerateData, nil)
+
+		// Setup client
+	c := api.NewOpenStorageCredentialsClient(s.Conn())
+
+	// Enumerate AWS credentials
+	resp, err := c.EnumerateForAWS(context.Background(), req)
+	assert.NoError(t, err)
+	assert.Len(t, resp.GetCred(), 1)
+
+	// Should Return only AWS creds
 	assert.Equal(t, resp.GetCred()[0].AccessKey, enumS3[api.OptCredAccessKey])
 	assert.Equal(t, resp.GetCred()[0].Endpoint, enumS3[api.OptCredEndpoint])
 }

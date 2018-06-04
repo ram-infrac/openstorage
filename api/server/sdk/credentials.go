@@ -372,12 +372,10 @@ func getCredentialMap(credList map[string]interface{}, credType string) (map[str
 				reflect.TypeOf(v).String())
 		}
 
-		// Look for only one type
+		// Look for only one type, fill up creds with same type array
 		switch c[api.OptCredType] {
 		case credType:
 			creds[k] = v
-		default:
-			return nil, errors.New("Could not find credentials stored for " + credType)
 		}
 	}
 
