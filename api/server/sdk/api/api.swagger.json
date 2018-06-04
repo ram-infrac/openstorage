@@ -150,15 +150,15 @@
         ]
       }
     },
-    "/v1/credentials/create/azure": {
+    "/v1/credentials/create/aws": {
       "post": {
-        "summary": "Create and store credentials\nChange like ProvideForAWS",
-        "operationId": "ProvideForAzure",
+        "summary": "Create credential for AWS S3 and if valid ,\nreturns a unique identifier",
+        "operationId": "CreateForAWS",
         "responses": {
           "200": {
             "description": "",
             "schema": {
-              "$ref": "#/definitions/apiProvideCredentialsForAzureResponse"
+              "$ref": "#/definitions/apiCredentialCreateAWSResponse"
             }
           }
         },
@@ -168,7 +168,34 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/apiProvideCredentialsForAzureRequest"
+              "$ref": "#/definitions/apiCredentialCreateAWSRequest"
+            }
+          }
+        ],
+        "tags": [
+          "OpenStorageCredentials"
+        ]
+      }
+    },
+    "/v1/credentials/create/azure": {
+      "post": {
+        "summary": "Create credential for Azure and if valid ,\nreturns a unique identifier",
+        "operationId": "CreateForAzure",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/apiCredentialCreateAzureResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/apiCredentialCreateAzureRequest"
             }
           }
         ],
@@ -179,13 +206,13 @@
     },
     "/v1/credentials/create/google": {
       "post": {
-        "summary": "Create and store credentials\nChange like ProvideForAWS",
-        "operationId": "ProvideForGoogle",
+        "summary": "Create credential for Google and if valid ,\nreturns a unique identifier",
+        "operationId": "CreateForGoogle",
         "responses": {
           "200": {
             "description": "",
             "schema": {
-              "$ref": "#/definitions/apiProvideCredentialsForGoogleResponse"
+              "$ref": "#/definitions/apiCredentialCreateGoogleResponse"
             }
           }
         },
@@ -195,7 +222,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/apiProvideCredentialsForGoogleRequest"
+              "$ref": "#/definitions/apiCredentialCreateGoogleRequest"
             }
           }
         ],
@@ -206,13 +233,13 @@
     },
     "/v1/credentials/delete": {
       "post": {
-        "summary": "Delete stored credentials",
-        "operationId": "CredentialsDelete",
+        "summary": "Delete a specified credential",
+        "operationId": "CredentialDelete",
         "responses": {
           "200": {
             "description": "",
             "schema": {
-              "$ref": "#/definitions/apiCredentialsDeleteResponse"
+              "$ref": "#/definitions/apiCredentialDeleteResponse"
             }
           }
         },
@@ -222,7 +249,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/apiCredentialsDeleteRequest"
+              "$ref": "#/definitions/apiCredentialDeleteRequest"
             }
           }
         ],
@@ -239,7 +266,7 @@
           "200": {
             "description": "",
             "schema": {
-              "$ref": "#/definitions/apiEnumerateCredentialsForAWSResponse"
+              "$ref": "#/definitions/apiCredentialEnumerateAWSResponse"
             }
           }
         },
@@ -249,7 +276,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/apiEnumerateCredentialsForAWSRequest"
+              "$ref": "#/definitions/apiCredentialEnumerateAWSRequest"
             }
           }
         ],
@@ -266,7 +293,7 @@
           "200": {
             "description": "",
             "schema": {
-              "$ref": "#/definitions/apiEnumerateCredentialsForAzureResponse"
+              "$ref": "#/definitions/apiCredentialEnumerateAzureResponse"
             }
           }
         },
@@ -276,7 +303,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/apiEnumerateCredentialsForAzureRequest"
+              "$ref": "#/definitions/apiCredentialEnumerateAzureRequest"
             }
           }
         ],
@@ -293,7 +320,7 @@
           "200": {
             "description": "",
             "schema": {
-              "$ref": "#/definitions/apiEnumerateCredentialsForGoogleResponse"
+              "$ref": "#/definitions/apiCredentialEnumerateGoogleResponse"
             }
           }
         },
@@ -303,34 +330,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/apiEnumerateCredentialsForGoogleRequest"
-            }
-          }
-        ],
-        "tags": [
-          "OpenStorageCredentials"
-        ]
-      }
-    },
-    "/v1/credentials/provide/aws": {
-      "post": {
-        "summary": "Provide credentials to OpenStorage and if valid,\nit will return an identifier to the credentials",
-        "operationId": "ProvideForAWS",
-        "responses": {
-          "200": {
-            "description": "",
-            "schema": {
-              "$ref": "#/definitions/apiProvideCredentialsForAWSResponse"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/apiProvideCredentialsForAWSRequest"
+              "$ref": "#/definitions/apiCredentialEnumerateGoogleRequest"
             }
           }
         ],
@@ -342,12 +342,12 @@
     "/v1/credentials/validate": {
       "post": {
         "summary": "Validate a specified credential",
-        "operationId": "CredentialsValidate",
+        "operationId": "CredentialValidate",
         "responses": {
           "200": {
             "description": "",
             "schema": {
-              "$ref": "#/definitions/apiCredentialsValidateResponse"
+              "$ref": "#/definitions/apiCredentialValidateResponse"
             }
           }
         },
@@ -357,7 +357,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/apiCredentialsValidateRequest"
+              "$ref": "#/definitions/apiCredentialValidateRequest"
             }
           }
         ],
@@ -884,19 +884,16 @@
       ],
       "default": "NONE"
     },
-    "apiCredentialsDeleteRequest": {
+    "apiCredentialCreateAWSRequest": {
       "type": "object",
       "properties": {
-        "credential_id": {
-          "type": "string",
-          "title": "ID for credentials"
+        "credential": {
+          "$ref": "#/definitions/apiS3Credential",
+          "title": "AWS S3 Credential"
         }
       }
     },
-    "apiCredentialsDeleteResponse": {
-      "type": "object"
-    },
-    "apiCredentialsValidateRequest": {
+    "apiCredentialCreateAWSResponse": {
       "type": "object",
       "properties": {
         "credential_id": {
@@ -905,10 +902,55 @@
         }
       }
     },
-    "apiCredentialsValidateResponse": {
+    "apiCredentialCreateAzureRequest": {
+      "type": "object",
+      "properties": {
+        "credential": {
+          "$ref": "#/definitions/apiAzureCredential",
+          "title": "Azure Credential"
+        }
+      }
+    },
+    "apiCredentialCreateAzureResponse": {
+      "type": "object",
+      "properties": {
+        "credential_id": {
+          "type": "string",
+          "title": "Id of the credentials"
+        }
+      }
+    },
+    "apiCredentialCreateGoogleRequest": {
+      "type": "object",
+      "properties": {
+        "credential": {
+          "$ref": "#/definitions/apiGoogleCredential",
+          "title": "Google Credential"
+        }
+      }
+    },
+    "apiCredentialCreateGoogleResponse": {
+      "type": "object",
+      "properties": {
+        "credential_id": {
+          "type": "string",
+          "title": "Id of the credentials"
+        }
+      }
+    },
+    "apiCredentialDeleteRequest": {
+      "type": "object",
+      "properties": {
+        "credential_id": {
+          "type": "string",
+          "title": "ID for credentials"
+        }
+      }
+    },
+    "apiCredentialDeleteResponse": {
       "type": "object"
     },
-    "apiEnumerateCredentialsForAWSRequest": {
+    "apiCredentialEnumerateAWSRequest": {
       "type": "object",
       "properties": {
         "credential_id": {
@@ -918,7 +960,7 @@
       },
       "title": "should enumerate accept anything?"
     },
-    "apiEnumerateCredentialsForAWSResponse": {
+    "apiCredentialEnumerateAWSResponse": {
       "type": "object",
       "properties": {
         "cred": {
@@ -930,7 +972,7 @@
         }
       }
     },
-    "apiEnumerateCredentialsForAzureRequest": {
+    "apiCredentialEnumerateAzureRequest": {
       "type": "object",
       "properties": {
         "credential_id": {
@@ -938,7 +980,7 @@
         }
       }
     },
-    "apiEnumerateCredentialsForAzureResponse": {
+    "apiCredentialEnumerateAzureResponse": {
       "type": "object",
       "properties": {
         "cred": {
@@ -950,7 +992,7 @@
         }
       }
     },
-    "apiEnumerateCredentialsForGoogleRequest": {
+    "apiCredentialEnumerateGoogleRequest": {
       "type": "object",
       "properties": {
         "credential_id": {
@@ -958,7 +1000,7 @@
         }
       }
     },
-    "apiEnumerateCredentialsForGoogleResponse": {
+    "apiCredentialEnumerateGoogleResponse": {
       "type": "object",
       "properties": {
         "cred": {
@@ -969,6 +1011,18 @@
           "title": "List of Credentials for Google"
         }
       }
+    },
+    "apiCredentialValidateRequest": {
+      "type": "object",
+      "properties": {
+        "credential_id": {
+          "type": "string",
+          "title": "Id of the credentials"
+        }
+      }
+    },
+    "apiCredentialValidateResponse": {
+      "type": "object"
     },
     "apiFSType": {
       "type": "string",
@@ -1040,92 +1094,6 @@
         "volume_id": {
           "type": "string",
           "title": "Id of new volume"
-        }
-      }
-    },
-    "apiProvideCredentialsForAWSRequest": {
-      "type": "object",
-      "properties": {
-        "cred_type": {
-          "type": "string",
-          "title": "Cred Type"
-        },
-        "access_key": {
-          "type": "string",
-          "title": "Access key"
-        },
-        "secret_key": {
-          "type": "string",
-          "title": "Secret key"
-        },
-        "endpoint": {
-          "type": "string",
-          "title": "Endpoint"
-        },
-        "region": {
-          "type": "string",
-          "title": "Region"
-        }
-      }
-    },
-    "apiProvideCredentialsForAWSResponse": {
-      "type": "object",
-      "properties": {
-        "credential_id": {
-          "type": "string",
-          "title": "Id of the credentials"
-        }
-      }
-    },
-    "apiProvideCredentialsForAzureRequest": {
-      "type": "object",
-      "properties": {
-        "cred_type": {
-          "type": "string",
-          "title": "Cred Type"
-        },
-        "account_name": {
-          "type": "string",
-          "title": "Account name"
-        },
-        "account_key": {
-          "type": "string",
-          "title": "Account key"
-        }
-      }
-    },
-    "apiProvideCredentialsForAzureResponse": {
-      "type": "object",
-      "properties": {
-        "credential_id": {
-          "type": "string",
-          "title": "Id of the credentials"
-        }
-      }
-    },
-    "apiProvideCredentialsForGoogleRequest": {
-      "type": "object",
-      "properties": {
-        "cred_type": {
-          "type": "string",
-          "title": "Cred Type"
-        },
-        "project_id": {
-          "type": "string",
-          "title": "Project ID"
-        },
-        "json_key": {
-          "type": "string",
-          "title": "JSON Key"
-        }
-      }
-    },
-    "apiProvideCredentialsForGoogleResponse": {
-      "type": "object",
-      "properties": {
-        "credential_id": {
-          "type": "string",
-          "title": "Id of the credentials"
         }
       }
     },

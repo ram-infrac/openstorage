@@ -27,34 +27,35 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-func (s *VolumeServer) ProvideForAWS(
+// CreateForAWS method creates credential for AWS S3.
+func (s *VolumeServer) CreateForAWS(
 	ctx context.Context,
-	req *api.ProvideCredentialsForAWSRequest,
-) (*api.ProvideCredentialsForAWSResponse, error) {
+	req *api.CredentialCreateAWSRequest,
+) (*api.CredentialCreateAWSResponse, error) {
 
-	if len(req.GetAccessKey()) == 0 {
+	if len(req.GetCredential().GetAccessKey()) == 0 {
 		return nil, status.Error(codes.InvalidArgument, "Must supply Access Key")
 	}
 
-	if len(req.GetSecretKey()) == 0 {
+	if len(req.GetCredential().GetSecretKey()) == 0 {
 		return nil, status.Error(codes.InvalidArgument, "Must supply Secret Key")
 	}
 
-	if len(req.GetRegion()) == 0 {
+	if len(req.GetCredential().GetRegion()) == 0 {
 		return nil, status.Error(codes.InvalidArgument, "Must supply Region Key")
 	}
 
-	if len(req.GetEndpoint()) == 0 {
+	if len(req.GetCredential().GetEndpoint()) == 0 {
 		return nil, status.Error(codes.InvalidArgument, "Must supply Endpoint Key")
 	}
 
 	params := make(map[string]string)
 
 	params[api.OptCredType] = "s3"
-	params[api.OptCredRegion] = req.GetRegion()
-	params[api.OptCredEndpoint] = req.GetEndpoint()
-	params[api.OptCredAccessKey] = req.GetAccessKey()
-	params[api.OptCredSecretKey] = req.GetSecretKey()
+	params[api.OptCredRegion] = req.GetCredential().GetRegion()
+	params[api.OptCredEndpoint] = req.GetCredential().GetEndpoint()
+	params[api.OptCredAccessKey] = req.GetCredential().GetAccessKey()
+	params[api.OptCredSecretKey] = req.GetCredential().GetSecretKey()
 
 	uuid, err := s.driver.CredsCreate(params)
 
@@ -65,50 +66,34 @@ func (s *VolumeServer) ProvideForAWS(
 			err.Error())
 	}
 
-	// Validate if the credentials provided were correct or not
-	validateReq := &api.CredentialsValidateRequest{CredentialId: uuid}
+	err = validateAndDelete(s, uuid)
 
-	validateErr := s.driver.CredsValidate(validateReq.GetCredentialId())
-
-	if validateErr != nil {
-		deleteCred := &api.CredentialsDeleteRequest{CredentialId: uuid}
-		err = s.driver.CredsDelete(deleteCred.GetCredentialId())
-
-		if err != nil {
-			return nil, status.Errorf(
-				codes.Internal,
-				"failed to delete invalid S3 credentials: %v",
-				err.Error())
-		}
-
-		return nil, status.Errorf(
-			codes.Internal,
-			"credentials could not be validated: %v",
-			validateErr.Error())
-
+	if err != nil {
+		return nil, err
 	}
-	return &api.ProvideCredentialsForAWSResponse{CredentialId: uuid}, nil
+	return &api.CredentialCreateAWSResponse{CredentialId: uuid}, nil
 
 }
 
-func (s *VolumeServer) ProvideForAzure(
+// CreateForAzure method creates credential for Azure.
+func (s *VolumeServer) CreateForAzure(
 	ctx context.Context,
-	req *api.ProvideCredentialsForAzureRequest,
-) (*api.ProvideCredentialsForAzureResponse, error) {
+	req *api.CredentialCreateAzureRequest,
+) (*api.CredentialCreateAzureResponse, error) {
 
-	if len(req.GetAccountKey()) == 0 {
+	if len(req.GetCredential().GetAccountKey()) == 0 {
 		return nil, status.Error(codes.InvalidArgument, "Must supply Account Key")
 	}
 
-	if len(req.GetAccountName()) == 0 {
+	if len(req.GetCredential().GetAccountName()) == 0 {
 		return nil, status.Error(codes.InvalidArgument, "Must supply Account name")
 	}
 
 	params := make(map[string]string)
 
 	params[api.OptCredType] = "azure"
-	params[api.OptCredAzureAccountKey] = req.GetAccountKey()
-	params[api.OptCredAzureAccountName] = req.GetAccountName()
+	params[api.OptCredAzureAccountKey] = req.GetCredential().GetAccountKey()
+	params[api.OptCredAzureAccountName] = req.GetCredential().GetAccountName()
 
 	uuid, err := s.driver.CredsCreate(params)
 
@@ -119,48 +104,33 @@ func (s *VolumeServer) ProvideForAzure(
 			err.Error())
 	}
 
-	// Validate if the credentials provided were correct or not
-	validateReq := &api.CredentialsValidateRequest{CredentialId: uuid}
+	err = validateAndDelete(s, uuid)
 
-	validateErr := s.driver.CredsValidate(validateReq.GetCredentialId())
-
-	if validateErr != nil {
-		deleteCred := &api.CredentialsDeleteRequest{CredentialId: uuid}
-		err = s.driver.CredsDelete(deleteCred.GetCredentialId())
-
-		if err != nil {
-			return nil, status.Errorf(
-				codes.Internal,
-				"failed to delete invalid Azure credentials: %v",
-				err.Error())
-		}
-
-		return nil, status.Errorf(
-			codes.Internal,
-			"credentials could not be validated: %v",
-			validateErr.Error())
+	if err != nil {
+		return nil, err
 	}
-	return &api.ProvideCredentialsForAzureResponse{CredentialId: uuid}, nil
+	return &api.CredentialCreateAzureResponse{CredentialId: uuid}, nil
 }
 
-func (s *VolumeServer) ProvideForGoogle(
+// CreateForGoogle method creates credential for Google.
+func (s *VolumeServer) CreateForGoogle(
 	ctx context.Context,
-	req *api.ProvideCredentialsForGoogleRequest,
-) (*api.ProvideCredentialsForGoogleResponse, error) {
+	req *api.CredentialCreateGoogleRequest,
+) (*api.CredentialCreateGoogleResponse, error) {
 
-	if len(req.GetJsonKey()) == 0 {
+	if len(req.GetCredential().GetJsonKey()) == 0 {
 		return nil, status.Error(codes.InvalidArgument, "Must supply JSON Key")
 	}
 
-	if len(req.GetProjectId()) == 0 {
+	if len(req.GetCredential().GetProjectId()) == 0 {
 		return nil, status.Error(codes.InvalidArgument, "Must supply Project ID")
 	}
 
 	params := make(map[string]string)
 
-	params[api.OptCredType] = "google" //req.GetCredType()
-	params[api.OptCredGoogleProjectID] = req.GetProjectId()
-	params[api.OptCredGoogleJsonKey] = req.GetJsonKey()
+	params[api.OptCredType] = "google"
+	params[api.OptCredGoogleProjectID] = req.GetCredential().GetProjectId()
+	params[api.OptCredGoogleJsonKey] = req.GetCredential().GetJsonKey()
 
 	uuid, err := s.driver.CredsCreate(params)
 
@@ -171,41 +141,26 @@ func (s *VolumeServer) ProvideForGoogle(
 			err.Error())
 	}
 
-	// Validate if the credentials provided were correct or not
-	validateReq := &api.CredentialsValidateRequest{CredentialId: uuid}
+	err = validateAndDelete(s, uuid)
 
-	validateErr := s.driver.CredsValidate(validateReq.GetCredentialId())
-
-	if validateErr != nil {
-		deleteCred := &api.CredentialsDeleteRequest{CredentialId: uuid}
-		err = s.driver.CredsDelete(deleteCred.GetCredentialId())
-
-		if err != nil {
-			return nil, status.Errorf(
-				codes.Internal,
-				"failed to delete invalid Google credentials: %v",
-				err.Error())
-		}
-
-		return nil, status.Errorf(
-			codes.Internal,
-			"credentials could not be validated: %v",
-			validateErr.Error())
-
+	if err != nil {
+		return nil, err
 	}
-	return &api.ProvideCredentialsForGoogleResponse{CredentialId: uuid}, nil
+
+	return &api.CredentialCreateGoogleResponse{CredentialId: uuid}, nil
 }
 
-func (s *VolumeServer) CredentialsValidate(
+// CredentialValidate deletes a specified Credential.
+func (s *VolumeServer) CredentialValidate(
 	ctx context.Context,
-	req *api.CredentialsValidateRequest,
-) (*api.CredentialsValidateResponse, error) {
+	req *api.CredentialValidateRequest,
+) (*api.CredentialValidateResponse, error) {
 
 	if len(req.GetCredentialId()) == 0 {
 		return nil, status.Error(codes.InvalidArgument, "Must provide credentials uuid")
 	}
 
-	validateReq := &api.CredentialsValidateRequest{CredentialId: req.GetCredentialId()}
+	validateReq := &api.CredentialValidateRequest{CredentialId: req.GetCredentialId()}
 
 	err := s.driver.CredsValidate(validateReq.GetCredentialId())
 
@@ -215,15 +170,15 @@ func (s *VolumeServer) CredentialsValidate(
 			"failed to validate credentials: %v",
 			err.Error())
 	}
-	return &api.CredentialsValidateResponse{}, nil
+	return &api.CredentialValidateResponse{}, nil
 
 }
 
-// Delete specfied credentials
-func (s *VolumeServer) CredentialsDelete(
+// CredentialDelete delete a specified credential
+func (s *VolumeServer) CredentialDelete(
 	ctx context.Context,
-	req *api.CredentialsDeleteRequest,
-) (*api.CredentialsDeleteResponse, error) {
+	req *api.CredentialDeleteRequest,
+) (*api.CredentialDeleteResponse, error) {
 
 	if len(req.GetCredentialId()) == 0 {
 		return nil, status.Error(codes.InvalidArgument, "Must provide credentials uuid")
@@ -237,36 +192,14 @@ func (s *VolumeServer) CredentialsDelete(
 			err.Error())
 	}
 
-	return &api.CredentialsDeleteResponse{}, nil
+	return &api.CredentialDeleteResponse{}, nil
 }
 
-func getCredentialMap(credList map[string]interface{}, credType string) (map[string]interface{}, error) {
-	creds := make(map[string]interface{})
-
-	for k, v := range credList {
-		c, ok := v.(map[string]interface{})
-		if !ok {
-			return nil, errors.New("Error parsing credentials %v" +
-				reflect.TypeOf(v).String())
-		}
-
-		// Look for only one type
-		switch c[api.OptCredType] {
-		case credType:
-			creds[k] = v
-		default:
-			return nil, errors.New("Could not find credentials stored for " + credType)
-		}
-	}
-
-	return creds, nil
-}
-
-// EnumerateCredentialsForAWS list credentials for AWS
+// EnumerateForAWS list credentials for AWS
 func (s *VolumeServer) EnumerateForAWS(
 	ctx context.Context,
-	req *api.EnumerateCredentialsForAWSRequest,
-) (*api.EnumerateCredentialsForAWSResponse, error) {
+	req *api.CredentialEnumerateAWSRequest,
+) (*api.CredentialEnumerateAWSResponse, error) {
 
 	credList, err := s.driver.CredsEnumerate()
 	if err != nil {
@@ -308,14 +241,14 @@ func (s *VolumeServer) EnumerateForAWS(
 		creds = append(creds, credResp)
 	}
 
-	return &api.EnumerateCredentialsForAWSResponse{Cred: creds}, nil
+	return &api.CredentialEnumerateAWSResponse{Cred: creds}, nil
 }
 
-// EnumerateCredentialsForAWS list credentials for AWS
+// EnumerateForAzure list credentials for AWS
 func (s *VolumeServer) EnumerateForAzure(
 	ctx context.Context,
-	req *api.EnumerateCredentialsForAzureRequest,
-) (*api.EnumerateCredentialsForAzureResponse, error) {
+	req *api.CredentialEnumerateAzureRequest,
+) (*api.CredentialEnumerateAzureResponse, error) {
 	credList, err := s.driver.CredsEnumerate()
 	if err != nil {
 		return nil, status.Errorf(
@@ -354,14 +287,14 @@ func (s *VolumeServer) EnumerateForAzure(
 		}
 		creds = append(creds, credResp)
 	}
-	return &api.EnumerateCredentialsForAzureResponse{Cred: creds}, nil
+	return &api.CredentialEnumerateAzureResponse{Cred: creds}, nil
 }
 
-// EnumerateCredentialsForAWS list credentials for Google
+// EnumerateForGoogle list credentials for Google
 func (s *VolumeServer) EnumerateForGoogle(
 	ctx context.Context,
-	req *api.EnumerateCredentialsForGoogleRequest,
-) (*api.EnumerateCredentialsForGoogleResponse, error) {
+	req *api.CredentialEnumerateGoogleRequest,
+) (*api.CredentialEnumerateGoogleResponse, error) {
 	credList, err := s.driver.CredsEnumerate()
 	if err != nil {
 		return nil, status.Errorf(
@@ -400,5 +333,53 @@ func (s *VolumeServer) EnumerateForGoogle(
 		creds = append(creds, credResp)
 	}
 
-	return &api.EnumerateCredentialsForGoogleResponse{Cred: creds}, nil
+	return &api.CredentialEnumerateGoogleResponse{Cred: creds}, nil
+}
+
+func validateAndDelete(s *VolumeServer, uuid string) error {
+	// Validate if the credentials provided were correct or not
+	req := &api.CredentialValidateRequest{CredentialId: uuid}
+
+	validateErr := s.driver.CredsValidate(req.GetCredentialId())
+
+	if validateErr != nil {
+		deleteCred := &api.CredentialDeleteRequest{CredentialId: uuid}
+		err := s.driver.CredsDelete(deleteCred.GetCredentialId())
+
+		if err != nil {
+			return status.Errorf(
+				codes.Internal,
+				"failed to delete invalid Google credentials: %v",
+				err.Error())
+		}
+
+		return status.Errorf(
+			codes.Internal,
+			"credentials could not be validated: %v",
+			validateErr.Error())
+	}
+
+	return nil
+}
+
+func getCredentialMap(credList map[string]interface{}, credType string) (map[string]interface{}, error) {
+	creds := make(map[string]interface{})
+
+	for k, v := range credList {
+		c, ok := v.(map[string]interface{})
+		if !ok {
+			return nil, errors.New("Error parsing credentials %v" +
+				reflect.TypeOf(v).String())
+		}
+
+		// Look for only one type
+		switch c[api.OptCredType] {
+		case credType:
+			creds[k] = v
+		default:
+			return nil, errors.New("Could not find credentials stored for " + credType)
+		}
+	}
+
+	return creds, nil
 }

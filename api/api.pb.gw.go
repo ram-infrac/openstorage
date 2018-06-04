@@ -249,47 +249,47 @@ func request_OpenStorageVolume_Unmount_0(ctx context.Context, marshaler runtime.
 
 }
 
-func request_OpenStorageCredentials_ProvideForAWS_0(ctx context.Context, marshaler runtime.Marshaler, client OpenStorageCredentialsClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq ProvideCredentialsForAWSRequest
+func request_OpenStorageCredentials_CreateForAWS_0(ctx context.Context, marshaler runtime.Marshaler, client OpenStorageCredentialsClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq CredentialCreateAWSRequest
 	var metadata runtime.ServerMetadata
 
 	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq); err != nil && err != io.EOF {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
-	msg, err := client.ProvideForAWS(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	msg, err := client.CreateForAWS(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 
 }
 
-func request_OpenStorageCredentials_ProvideForAzure_0(ctx context.Context, marshaler runtime.Marshaler, client OpenStorageCredentialsClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq ProvideCredentialsForAzureRequest
+func request_OpenStorageCredentials_CreateForAzure_0(ctx context.Context, marshaler runtime.Marshaler, client OpenStorageCredentialsClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq CredentialCreateAzureRequest
 	var metadata runtime.ServerMetadata
 
 	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq); err != nil && err != io.EOF {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
-	msg, err := client.ProvideForAzure(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	msg, err := client.CreateForAzure(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 
 }
 
-func request_OpenStorageCredentials_ProvideForGoogle_0(ctx context.Context, marshaler runtime.Marshaler, client OpenStorageCredentialsClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq ProvideCredentialsForGoogleRequest
+func request_OpenStorageCredentials_CreateForGoogle_0(ctx context.Context, marshaler runtime.Marshaler, client OpenStorageCredentialsClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq CredentialCreateGoogleRequest
 	var metadata runtime.ServerMetadata
 
 	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq); err != nil && err != io.EOF {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
-	msg, err := client.ProvideForGoogle(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	msg, err := client.CreateForGoogle(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 
 }
 
 func request_OpenStorageCredentials_EnumerateForAWS_0(ctx context.Context, marshaler runtime.Marshaler, client OpenStorageCredentialsClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq EnumerateCredentialsForAWSRequest
+	var protoReq CredentialEnumerateAWSRequest
 	var metadata runtime.ServerMetadata
 
 	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq); err != nil && err != io.EOF {
@@ -302,7 +302,7 @@ func request_OpenStorageCredentials_EnumerateForAWS_0(ctx context.Context, marsh
 }
 
 func request_OpenStorageCredentials_EnumerateForAzure_0(ctx context.Context, marshaler runtime.Marshaler, client OpenStorageCredentialsClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq EnumerateCredentialsForAzureRequest
+	var protoReq CredentialEnumerateAzureRequest
 	var metadata runtime.ServerMetadata
 
 	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq); err != nil && err != io.EOF {
@@ -315,7 +315,7 @@ func request_OpenStorageCredentials_EnumerateForAzure_0(ctx context.Context, mar
 }
 
 func request_OpenStorageCredentials_EnumerateForGoogle_0(ctx context.Context, marshaler runtime.Marshaler, client OpenStorageCredentialsClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq EnumerateCredentialsForGoogleRequest
+	var protoReq CredentialEnumerateGoogleRequest
 	var metadata runtime.ServerMetadata
 
 	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq); err != nil && err != io.EOF {
@@ -327,28 +327,28 @@ func request_OpenStorageCredentials_EnumerateForGoogle_0(ctx context.Context, ma
 
 }
 
-func request_OpenStorageCredentials_CredentialsDelete_0(ctx context.Context, marshaler runtime.Marshaler, client OpenStorageCredentialsClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq CredentialsDeleteRequest
+func request_OpenStorageCredentials_CredentialDelete_0(ctx context.Context, marshaler runtime.Marshaler, client OpenStorageCredentialsClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq CredentialDeleteRequest
 	var metadata runtime.ServerMetadata
 
 	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq); err != nil && err != io.EOF {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
-	msg, err := client.CredentialsDelete(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	msg, err := client.CredentialDelete(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 
 }
 
-func request_OpenStorageCredentials_CredentialsValidate_0(ctx context.Context, marshaler runtime.Marshaler, client OpenStorageCredentialsClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq CredentialsValidateRequest
+func request_OpenStorageCredentials_CredentialValidate_0(ctx context.Context, marshaler runtime.Marshaler, client OpenStorageCredentialsClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq CredentialValidateRequest
 	var metadata runtime.ServerMetadata
 
 	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq); err != nil && err != io.EOF {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
-	msg, err := client.CredentialsValidate(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	msg, err := client.CredentialValidate(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 
 }
@@ -1042,7 +1042,7 @@ func RegisterOpenStorageCredentialsHandler(ctx context.Context, mux *runtime.Ser
 // "OpenStorageCredentialsClient" to call the correct interceptors.
 func RegisterOpenStorageCredentialsHandlerClient(ctx context.Context, mux *runtime.ServeMux, client OpenStorageCredentialsClient) error {
 
-	mux.Handle("POST", pattern_OpenStorageCredentials_ProvideForAWS_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("POST", pattern_OpenStorageCredentials_CreateForAWS_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		if cn, ok := w.(http.CloseNotifier); ok {
@@ -1060,18 +1060,18 @@ func RegisterOpenStorageCredentialsHandlerClient(ctx context.Context, mux *runti
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_OpenStorageCredentials_ProvideForAWS_0(rctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_OpenStorageCredentials_CreateForAWS_0(rctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_OpenStorageCredentials_ProvideForAWS_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_OpenStorageCredentials_CreateForAWS_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("POST", pattern_OpenStorageCredentials_ProvideForAzure_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("POST", pattern_OpenStorageCredentials_CreateForAzure_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		if cn, ok := w.(http.CloseNotifier); ok {
@@ -1089,18 +1089,18 @@ func RegisterOpenStorageCredentialsHandlerClient(ctx context.Context, mux *runti
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_OpenStorageCredentials_ProvideForAzure_0(rctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_OpenStorageCredentials_CreateForAzure_0(rctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_OpenStorageCredentials_ProvideForAzure_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_OpenStorageCredentials_CreateForAzure_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("POST", pattern_OpenStorageCredentials_ProvideForGoogle_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("POST", pattern_OpenStorageCredentials_CreateForGoogle_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		if cn, ok := w.(http.CloseNotifier); ok {
@@ -1118,14 +1118,14 @@ func RegisterOpenStorageCredentialsHandlerClient(ctx context.Context, mux *runti
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_OpenStorageCredentials_ProvideForGoogle_0(rctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_OpenStorageCredentials_CreateForGoogle_0(rctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_OpenStorageCredentials_ProvideForGoogle_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_OpenStorageCredentials_CreateForGoogle_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
@@ -1216,7 +1216,7 @@ func RegisterOpenStorageCredentialsHandlerClient(ctx context.Context, mux *runti
 
 	})
 
-	mux.Handle("POST", pattern_OpenStorageCredentials_CredentialsDelete_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("POST", pattern_OpenStorageCredentials_CredentialDelete_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		if cn, ok := w.(http.CloseNotifier); ok {
@@ -1234,18 +1234,18 @@ func RegisterOpenStorageCredentialsHandlerClient(ctx context.Context, mux *runti
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_OpenStorageCredentials_CredentialsDelete_0(rctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_OpenStorageCredentials_CredentialDelete_0(rctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_OpenStorageCredentials_CredentialsDelete_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_OpenStorageCredentials_CredentialDelete_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("POST", pattern_OpenStorageCredentials_CredentialsValidate_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("POST", pattern_OpenStorageCredentials_CredentialValidate_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		if cn, ok := w.(http.CloseNotifier); ok {
@@ -1263,14 +1263,14 @@ func RegisterOpenStorageCredentialsHandlerClient(ctx context.Context, mux *runti
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_OpenStorageCredentials_CredentialsValidate_0(rctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_OpenStorageCredentials_CredentialValidate_0(rctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_OpenStorageCredentials_CredentialsValidate_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_OpenStorageCredentials_CredentialValidate_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
@@ -1278,11 +1278,11 @@ func RegisterOpenStorageCredentialsHandlerClient(ctx context.Context, mux *runti
 }
 
 var (
-	pattern_OpenStorageCredentials_ProvideForAWS_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"v1", "credentials", "provide", "aws"}, ""))
+	pattern_OpenStorageCredentials_CreateForAWS_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"v1", "credentials", "create", "aws"}, ""))
 
-	pattern_OpenStorageCredentials_ProvideForAzure_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"v1", "credentials", "create", "azure"}, ""))
+	pattern_OpenStorageCredentials_CreateForAzure_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"v1", "credentials", "create", "azure"}, ""))
 
-	pattern_OpenStorageCredentials_ProvideForGoogle_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"v1", "credentials", "create", "google"}, ""))
+	pattern_OpenStorageCredentials_CreateForGoogle_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"v1", "credentials", "create", "google"}, ""))
 
 	pattern_OpenStorageCredentials_EnumerateForAWS_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"v1", "credentials", "enumerate", "aws"}, ""))
 
@@ -1290,17 +1290,17 @@ var (
 
 	pattern_OpenStorageCredentials_EnumerateForGoogle_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"v1", "credentials", "enumerate", "google"}, ""))
 
-	pattern_OpenStorageCredentials_CredentialsDelete_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"v1", "credentials", "delete"}, ""))
+	pattern_OpenStorageCredentials_CredentialDelete_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"v1", "credentials", "delete"}, ""))
 
-	pattern_OpenStorageCredentials_CredentialsValidate_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"v1", "credentials", "validate"}, ""))
+	pattern_OpenStorageCredentials_CredentialValidate_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"v1", "credentials", "validate"}, ""))
 )
 
 var (
-	forward_OpenStorageCredentials_ProvideForAWS_0 = runtime.ForwardResponseMessage
+	forward_OpenStorageCredentials_CreateForAWS_0 = runtime.ForwardResponseMessage
 
-	forward_OpenStorageCredentials_ProvideForAzure_0 = runtime.ForwardResponseMessage
+	forward_OpenStorageCredentials_CreateForAzure_0 = runtime.ForwardResponseMessage
 
-	forward_OpenStorageCredentials_ProvideForGoogle_0 = runtime.ForwardResponseMessage
+	forward_OpenStorageCredentials_CreateForGoogle_0 = runtime.ForwardResponseMessage
 
 	forward_OpenStorageCredentials_EnumerateForAWS_0 = runtime.ForwardResponseMessage
 
@@ -1308,7 +1308,7 @@ var (
 
 	forward_OpenStorageCredentials_EnumerateForGoogle_0 = runtime.ForwardResponseMessage
 
-	forward_OpenStorageCredentials_CredentialsDelete_0 = runtime.ForwardResponseMessage
+	forward_OpenStorageCredentials_CredentialDelete_0 = runtime.ForwardResponseMessage
 
-	forward_OpenStorageCredentials_CredentialsValidate_0 = runtime.ForwardResponseMessage
+	forward_OpenStorageCredentials_CredentialValidate_0 = runtime.ForwardResponseMessage
 )
