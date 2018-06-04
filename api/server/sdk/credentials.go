@@ -241,7 +241,7 @@ func (s *VolumeServer) EnumerateForAWS(
 		creds = append(creds, credResp)
 	}
 
-	return &api.CredentialEnumerateAWSResponse{Cred: creds}, nil
+	return &api.CredentialEnumerateAWSResponse{Credential: creds}, nil
 }
 
 // EnumerateForAzure list credentials for AWS
@@ -287,7 +287,7 @@ func (s *VolumeServer) EnumerateForAzure(
 		}
 		creds = append(creds, credResp)
 	}
-	return &api.CredentialEnumerateAzureResponse{Cred: creds}, nil
+	return &api.CredentialEnumerateAzureResponse{Credential: creds}, nil
 }
 
 // EnumerateForGoogle list credentials for Google
@@ -333,7 +333,7 @@ func (s *VolumeServer) EnumerateForGoogle(
 		creds = append(creds, credResp)
 	}
 
-	return &api.CredentialEnumerateGoogleResponse{Cred: creds}, nil
+	return &api.CredentialEnumerateGoogleResponse{Credential: creds}, nil
 }
 
 func validateAndDelete(s *VolumeServer, uuid string) error {

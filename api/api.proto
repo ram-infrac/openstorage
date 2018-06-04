@@ -954,7 +954,7 @@ message CredentialEnumerateAWSRequest {
 
 message CredentialEnumerateAWSResponse {                                   
 	// Array of Credentials for AWS
-	repeated S3Credential cred = 1;
+	repeated S3Credential credential = 1;
 }                                                                               
                                                                                 
 message CredentialEnumerateAzureRequest {                                   
@@ -963,7 +963,7 @@ message CredentialEnumerateAzureRequest {
                                                                                 
 message CredentialEnumerateAzureResponse {                                  
 	// List of Credentials for Azure
-	repeated AzureCredential cred = 1;
+	repeated AzureCredential credential = 1;
 }                                                                               
                                                                                 
 message CredentialEnumerateGoogleRequest {                                  
@@ -972,7 +972,7 @@ message CredentialEnumerateGoogleRequest {
                                                                                 
 message CredentialEnumerateGoogleResponse {                               
 	// List of Credentials for Google 
-	repeated GoogleCredential cred = 1; 
+	repeated GoogleCredential credential = 1; 
 }                            
 message CredentialDeleteRequest {                                                   
     // ID for credentials                                                       

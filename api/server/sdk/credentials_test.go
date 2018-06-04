@@ -495,7 +495,7 @@ func TestSdkCredentialEnumerateAWSSuccess(t *testing.T) {
 	resp, err := c.EnumerateForAWS(context.Background(), req)
 	assert.NoError(t, err)
 
-	assert.Len(t, resp.GetCred(), 2)
+	assert.Len(t, resp.GetCredential(), 2)
 }
 
 func TestSdkCredentialEnumerateAWSWithMultipleCredResponseSuccess(t *testing.T) {
@@ -542,11 +542,11 @@ func TestSdkCredentialEnumerateAWSWithMultipleCredResponseSuccess(t *testing.T) 
 	// Enumerate AWS credentials
 	resp, err := c.EnumerateForAWS(context.Background(), req)
 	assert.NoError(t, err)
-	assert.Len(t, resp.GetCred(), 1)
+	assert.Len(t, resp.GetCredential(), 1)
 
 	// Should Return only AWS creds
-	assert.Equal(t, resp.GetCred()[0].AccessKey, enumS3[api.OptCredAccessKey])
-	assert.Equal(t, resp.GetCred()[0].Endpoint, enumS3[api.OptCredEndpoint])
+	assert.Equal(t, resp.GetCredential()[0].AccessKey, enumS3[api.OptCredAccessKey])
+	assert.Equal(t, resp.GetCredential()[0].Endpoint, enumS3[api.OptCredEndpoint])
 }
 
 func TestSdkCredentialEnumerateAWSFailed(t *testing.T) {
@@ -602,8 +602,8 @@ func TestSdkCredentialEnumerateAzureSuccess(t *testing.T) {
 	resp, err := c.EnumerateForAzure(context.Background(), req)
 	assert.NoError(t, err)
 
-	assert.Equal(t, resp.GetCred()[0].AccountName, enumAzure[api.OptCredAzureAccountName])
-	assert.Equal(t, resp.GetCred()[0].AccountKey, enumAzure[api.OptCredAzureAccountKey])
+	assert.Equal(t, resp.GetCredential()[0].AccountName, enumAzure[api.OptCredAzureAccountName])
+	assert.Equal(t, resp.GetCredential()[0].AccountKey, enumAzure[api.OptCredAzureAccountKey])
 
 }
 
@@ -658,7 +658,7 @@ func TestSdkCredentialEnumerateGoogleSuccess(t *testing.T) {
 	resp, err := c.EnumerateForGoogle(context.Background(), req)
 	assert.NoError(t, err)
 
-	assert.Equal(t, resp.GetCred()[0].ProjectId, enumGoogle[api.OptCredGoogleProjectID])
+	assert.Equal(t, resp.GetCredential()[0].ProjectId, enumGoogle[api.OptCredGoogleProjectID])
 }
 
 func TestSdkCredentialEnumerateGoogleFailed(t *testing.T) {
