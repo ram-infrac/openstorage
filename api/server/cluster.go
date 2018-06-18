@@ -10,6 +10,7 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/libopenstorage/openstorage/api"
+	drive "github.com/libopenstorage/openstorage/clouddrive"
 	"github.com/libopenstorage/openstorage/cluster"
 	"github.com/libopenstorage/openstorage/objectstore"
 	sched "github.com/libopenstorage/openstorage/schedpolicy"
@@ -26,6 +27,7 @@ type clusterApi struct {
 	SecretManager      secrets.Secrets
 	SchedPolicyManager sched.SchedulePolicy
 	ObjectStoreManager objectstore.ObjectStore
+	CloudDriveManager  drive.CloudDrive
 }
 
 // ClusterServerConfiguration holds manager implementation
@@ -38,6 +40,8 @@ type ClusterServerConfiguration struct {
 	ConfigSchedManager sched.SchedulePolicy
 	// holds implementation to ObjectStore interface
 	ConfigObjectStoreManager objectstore.ObjectStore
+	// holds implementation to clouddrive interface
+	ConfigCloudDriveManager drive.CloudDrive
 }
 
 func newClusterAPI(config ClusterServerConfiguration) restServer {
@@ -49,6 +53,7 @@ func newClusterAPI(config ClusterServerConfiguration) restServer {
 		SecretManager:      config.ConfigSecretManager,
 		SchedPolicyManager: config.ConfigSchedManager,
 		ObjectStoreManager: config.ConfigObjectStoreManager,
+		CloudDriveManager:  config.ConfigCloudDriveManager,
 	}
 }
 

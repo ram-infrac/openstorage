@@ -46,5 +46,7 @@ func (c *clusterApi) Routes() []*Route {
 		{verb: "POST", path: clusterPath(client.ObjectStorePath, cluster.APIVersion), fn: c.objectStoreCreate},
 		{verb: "PUT", path: clusterPath(client.ObjectStorePath, cluster.APIVersion), fn: c.objectStoreUpdate},
 		{verb: "DELETE", path: clusterPath(client.ObjectStorePath+"/delete", cluster.APIVersion), fn: c.objectStoreDelete},
+		{verb: "GET", path: clusterPath(client.CloudDrivePath, cluster.APIVersion), fn: c.cloudDriveEnumerate},
+		{verb: "POST", path: clusterPath(client.CloudDrivePath, cluster.APIVersion), fn: c.cloudDriveCreate},
 	}
 }

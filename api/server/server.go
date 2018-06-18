@@ -10,6 +10,7 @@ import (
 	"github.com/sirupsen/logrus"
 
 	"github.com/gorilla/mux"
+	drive "github.com/libopenstorage/openstorage/clouddrive"
 	"github.com/libopenstorage/openstorage/objectstore"
 	sched "github.com/libopenstorage/openstorage/schedpolicy"
 	"github.com/libopenstorage/openstorage/secrets"
@@ -127,6 +128,10 @@ func CheckNullClusterServerConfiguration(config *ClusterServerConfiguration) {
 
 	if config.ConfigObjectStoreManager == nil {
 		config.ConfigObjectStoreManager = objectstore.NewDefaultObjectStore()
+	}
+
+	if config.ConfigCloudDriveManager == nil {
+		config.ConfigCloudDriveManager = drive.NewDefaultCloudDrive()
 	}
 
 }
