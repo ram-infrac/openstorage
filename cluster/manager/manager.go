@@ -24,6 +24,7 @@ import (
 	"github.com/libopenstorage/openstorage/osdconfig"
 	sched "github.com/libopenstorage/openstorage/schedpolicy"
 	"github.com/libopenstorage/openstorage/secrets"
+	"github.com/libopenstorage/openstorage/services"
 	"github.com/libopenstorage/systemutils"
 	"github.com/portworx/kvdb"
 	"github.com/sirupsen/logrus"
@@ -71,6 +72,7 @@ type ClusterManager struct {
 	schedManager    sched.SchedulePolicyProvider
 	objstoreManager objectstore.ObjectStore
 	secretsManager  secrets.Secrets
+	serviceManager  services.Service
 }
 
 // Init instantiates a new cluster manager.
@@ -1122,6 +1124,12 @@ func (c *ClusterManager) setupManagers(config *cluster.ClusterServerConfiguratio
 		c.secretsManager = config.ConfigSecretManager
 	}
 
+	if config.ConfigServiceManager == nil {
+		c.serviceManager = services.NewDefaultService()
+	} else {
+		c.serviceManager = config.ConfigServiceManager
+	}
+
 }
 
 // Start initiates the cluster manager and the cluster state machine
@@ -1850,4 +1858,29 @@ func (c *ClusterManager) SecretSet(secretKey string, secretValue interface{}) er
 // SecretGet retrieves the value/data for given key
 func (c *ClusterManager) SecretGet(secretKey string) (interface{}, error) {
 	return c.SecretGet(secretKey)
+}
+
+// ServiceAddDrive adds the specified drive
+func (c *ClusterManager) ServiceAddDrive(op, drive string, journal bool) (string, error) {
+	return c.ServiceAddDrive(op, drive, journal)
+}
+
+// ServiceReplaceDrive source with target.
+func (c *ClusterManager) ServiceReplaceDrive(op, source, target string) (string, error) {
+	return c.ServiceReplaceDrive(op, source, target)
+}
+
+// ServiceRebalancePool rebalnce storage pool by ID
+func (c *ClusterManager) ServiceRebalancePool(op string, PoolID int) (string, error) {
+	return c.ServiceRebalancePool(op, PoolID)
+}
+
+// ServiceExitMaintenanceMode exits maintenance mode
+func (c *ClusterManager) ServiceExitMaintenanceMode() error {
+	return c.ServiceExitMaintenanceMode()
+}
+
+// ServiceEnterMaintenanceMode enters maintenance mode and exits the proces
+func (c *ClusterManager) ServiceEnterMaintenanceMode(exitOut bool) error {
+	return c.ServiceEnterMaintenanceMode(exitOut)
 }

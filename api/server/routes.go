@@ -52,5 +52,10 @@ func (c *clusterApi) Routes() []*Route {
 		{verb: "GET", path: clusterPath(client.PairPath+"/{id}", cluster.APIVersion), fn: c.getPair},
 		{verb: "DELETE", path: clusterPath(client.PairPath+"/{id}", cluster.APIVersion), fn: c.deletePair},
 		{verb: "GET", path: clusterPath(client.PairTokenPath, cluster.APIVersion), fn: c.getPairToken},
+		{verb: "POST", path: clusterPath(client.ServicePath+"/drive", cluster.APIVersion), fn: c.serviceAddDrive},
+		{verb: "PUT", path: clusterPath(client.ServicePath+"/drive", cluster.APIVersion), fn: c.serviceReplaceDrive},
+		{verb: "PUT", path: clusterPath(client.ServicePath+"/entermaintenance", cluster.APIVersion), fn: c.serviceEnterMaintenanceMode},
+		{verb: "PUT", path: clusterPath(client.ServicePath+"/exitmaintenance", cluster.APIVersion), fn: c.serviceExitMaintenanceMode},
+		{verb: "PUT", path: clusterPath(client.ServicePath+"/rebalancepool", cluster.APIVersion), fn: c.serviceRebalancePool},
 	}
 }

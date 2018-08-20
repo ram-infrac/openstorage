@@ -11,6 +11,7 @@ import (
 	"github.com/libopenstorage/openstorage/osdconfig"
 	sched "github.com/libopenstorage/openstorage/schedpolicy"
 	"github.com/libopenstorage/openstorage/secrets"
+	"github.com/libopenstorage/openstorage/services"
 	"github.com/portworx/kvdb"
 )
 
@@ -40,6 +41,8 @@ type ClusterServerConfiguration struct {
 	ConfigSchedManager sched.SchedulePolicyProvider
 	// holds implementation to ObjectStore interface
 	ConfigObjectStoreManager objectstore.ObjectStore
+	// holds implementation to service api interface
+	ConfigServiceManager services.Service
 }
 
 // NodeEntry is used to discover other nodes in the cluster
@@ -304,6 +307,7 @@ type Cluster interface {
 	secrets.Secrets
 	sched.SchedulePolicyProvider
 	objectstore.ObjectStore
+	services.Service
 }
 
 // ClusterNotify is the callback function listeners can use to notify cluster manager
