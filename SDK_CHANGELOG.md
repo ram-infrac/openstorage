@@ -5,6 +5,12 @@
 
 ## Releases
 
+
+### v0.33.1 - Tech Preview (12/05/2018)
+
+* Storage policy support
+* Allow Enforce/Release of storage policy
+
 ### v0.33.0 - Tech Preview (12/05/2018)
 
 * Add TaskId and ClusterId to CloudMigrate status request
