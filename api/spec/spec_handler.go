@@ -337,6 +337,8 @@ func (d *specHandler) UpdateSpecFromOpts(opts map[string]string, spec *api.Volum
 			} else {
 				spec.ForceUnsupportedFsType = forceFs
 			}
+		case api.StoragePolicy:
+			spec.StoragePolicy = v
 		default:
 			spec.VolumeLabels[k] = v
 		}

@@ -1722,6 +1722,10 @@
       "title": "Define a storage policy inspect response",
       "type": "object"
     },
+    "apiSdkOpenStoragePolicyReleaseRequest": {
+      "title": "Empty Request",
+      "type": "object"
+    },
     "apiSdkOpenStoragePolicyReleaseResponse": {
       "title": "Empty Response",
       "type": "object"
@@ -1917,7 +1921,7 @@
       "type": "object"
     },
     "apiSdkStoragePolicy": {
-      "description": "A SdkStoragePolicy represent minimum set of volume specs to be follow while creating volumes.\nIf enabled, VolumeSpecUpdate will be used before creating volume to ensure minimum volume creation rules\nare enforced.",
+      "description": "A SdkStoragePolicy represents minimum set of volume specs to be \nfollow while creating volumes.\nIf enforce in OpenStoragePolicy service, VolumeSpecPolicy will be \nused before creating volume to ensure minimum volume creation rules\nare enforced.",
       "properties": {
         "name": {
           "description": "Name of storage policy.",
@@ -3234,7 +3238,7 @@
   },
   "info": {
     "title": "OpenStorage SDK",
-    "version": "0.33.0"
+    "version": "0.33.1"
   },
   "paths": {
     "/v1/alerts": {
@@ -4402,6 +4406,33 @@
         ]
       }
     },
+    "/v1/storagepolicies/release": {
+      "post": {
+        "operationId": "Release",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/apiSdkOpenStoragePolicyReleaseRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/apiSdkOpenStoragePolicyReleaseResponse"
+            }
+          }
+        },
+        "summary": "Release specified storage policy constraint for volume\ncreation",
+        "tags": [
+          "OpenStoragePolicy"
+        ]
+      }
+    },
     "/v1/storagepolicies/{name}": {
       "delete": {
         "operationId": "Delete",
@@ -4447,23 +4478,6 @@
           }
         },
         "summary": "Enforces specified storage policy",
-        "tags": [
-          "OpenStoragePolicy"
-        ]
-      }
-    },
-    "/v1/storagepolicy/release": {
-      "post": {
-        "operationId": "Release",
-        "responses": {
-          "200": {
-            "description": "",
-            "schema": {
-              "$ref": "#/definitions/apiSdkOpenStoragePolicyReleaseResponse"
-            }
-          }
-        },
-        "summary": "Release specified storage policy constraint for volume\ncreation",
         "tags": [
           "OpenStoragePolicy"
         ]

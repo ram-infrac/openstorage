@@ -520,8 +520,10 @@ message CapacityUsageInfo {
   int64 total_bytes = 3;
 }
 
-// A SdkStoragePolicy represent minimum set of volume specs to be follow while creating volumes.
-// If enabled, VolumeSpecUpdate will be used before creating volume to ensure minimum volume creation rules
+// A SdkStoragePolicy represents minimum set of volume specs to be 
+// follow while creating volumes.
+// If enforce in OpenStoragePolicy service, VolumeSpecPolicy will be 
+// used before creating volume to ensure minimum volume creation rules
 // are enforced.
 message SdkStoragePolicy {
   // Name of storage policy.
@@ -1626,8 +1628,7 @@ service OpenStorageCloudBackup {
 // Policies can be used to enforces a set of volume configurations to be followed
 // while creating volumes.
 service OpenStoragePolicy {
-  // TODO: storage policy owenership
-
+  
   // Creates a storage policy
   rpc Create(SdkOpenStoragePolicyCreateRequest)
     returns (SdkOpenStoragePolicyCreateResponse) {
@@ -1683,7 +1684,8 @@ service OpenStoragePolicy {
   rpc Release(SdkOpenStoragePolicyReleaseRequest)
     returns (SdkOpenStoragePolicyReleaseResponse) {
       option(google.api.http) = {
-        post: "/v1/storagepolicy/release"
+        post: "/v1/storagepolicies/release"
+        body: "*"
       };
     }
 }
@@ -2792,7 +2794,7 @@ message SdkVersion {
     // SDK version minor value of this specification
     Minor = 33;
     // SDK version patch value of this specification
-    Patch = 0;
+    Patch = 1;
   }
 
   // The following cannot be set to use the enum Version because the REST
